@@ -1,0 +1,35 @@
+<odoo>
+    <data>
+
+        <record id="cancel_journal_user_access" model="res.groups">
+            <field name="name">Cancel Journal Entry/Invoice</field>
+            <field name="category_id" ref="module_category_journal_entry_access"/>
+        </record>
+
+        <record id="delete_journal_user_access" model="res.groups">
+            <field name="name">Delete Journal Entry/Invoice</field>
+            <field name="category_id" ref="module_category_journal_entry_access"/>
+        </record>
+
+        <record id="post_journal_user_access" model="res.groups">
+            <field name="name">Post Journal Entry/Invoice</field>
+            <field name="category_id" ref="module_category_journal_entry_access"/>
+        </record>
+
+        <record id="register_payment_journal_user_access" model="res.groups">
+            <field name="name">Register Payment Journal Entry/Invoice</field>
+            <field name="category_id" ref="module_category_journal_entry_access"/>
+        </record>
+
+        <record id="reverse_journal_user_access" model="res.groups">
+            <field name="name">Reverse Journal Entry/Invoice</field>
+            <field name="category_id" ref="module_category_journal_entry_access"/>
+        </record>
+
+        <record id="sendto_draft_journal_user_access" model="res.groups">
+            <field name="name">Send To Draft Journal Entry/Invoice</field>
+            <field name="category_id" ref="module_category_journal_entry_access"/>
+        </record>
+
+    </data>
+</odoo>
