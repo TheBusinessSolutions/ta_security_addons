@@ -1,0 +1,160 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bi_convert_purchase_from_sales
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-17 17:01+0000\n"
+"PO-Revision-Date: 2025-11-17 17:01+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: bi_convert_purchase_from_sales
+#: model_terms:ir.ui.view,arch_db:bi_convert_purchase_from_sales.sale_order_view
+msgid ""
+"<span class=\"o_stat_text\">\n"
+"                                        Purchase Order\n"
+"                                    </span>"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model_terms:ir.ui.view,arch_db:bi_convert_purchase_from_sales.view_transientmodel_wizard_form
+msgid "Cancel"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.actions.act_window,name:bi_convert_purchase_from_sales.action_transientmodel_wizard
+#: model:ir.model,name:bi_convert_purchase_from_sales.model_create_purchaseorder
+#: model_terms:ir.ui.view,arch_db:bi_convert_purchase_from_sales.sale_order_view
+#: model_terms:ir.ui.view,arch_db:bi_convert_purchase_from_sales.view_transientmodel_wizard_form
+msgid "Create Purchase Order"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_create_purchaseorder__create_uid
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_create_purchaseorder__create_date
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__name
+msgid "Description"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_create_purchaseorder__display_name
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model,name:bi_convert_purchase_from_sales.model_getsale_orderdata
+msgid "Get Sale Order Data"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_create_purchaseorder__id
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__id
+msgid "ID"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_create_purchaseorder__write_uid
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_create_purchaseorder__write_date
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__new_order_line_id
+msgid "New Order Line"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_create_purchaseorder__date_order
+msgid "Order Date"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_create_purchaseorder__new_order_line_ids
+msgid "Order Line"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__order_id
+msgid "Order Reference"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__product_id
+msgid "Product"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__product_uom
+msgid "Product Unit of Measure"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_sale_order__po_count
+msgid "Purchase Order"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__product_qty
+msgid "Quantity"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#. odoo-python
+#: code:addons/bi_convert_purchase_from_sales/model/sale_order.py:0
+#, python-format
+msgid "Requests for Quotation"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model_terms:ir.ui.view,arch_db:bi_convert_purchase_from_sales.view_transientmodel_wizard_form
+msgid "Sale Order"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model,name:bi_convert_purchase_from_sales.model_sale_order
+msgid "Sales Order"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__date_planned
+msgid "Scheduled Date"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__product_subtotal
+msgid "Sub Total"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_getsale_orderdata__price_unit
+msgid "Unit Price"
+msgstr ""
+
+#. module: bi_convert_purchase_from_sales
+#: model:ir.model.fields,field_description:bi_convert_purchase_from_sales.field_create_purchaseorder__partner_id
+msgid "Vendor"
+msgstr ""
