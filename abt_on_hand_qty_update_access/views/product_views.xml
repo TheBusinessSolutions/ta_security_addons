@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="inherited_product_template_only_form_view" model="ir.ui.view">
+        <field name="name">product.template.form</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_update_quantity_on_hand']" position="replace">
+               <button string="Update Quantity" type="object"
+                    groups="abt_on_hand_qty_update_access.group_on_hand_qty_update_access"
+                    name="action_update_quantity_on_hand"
+                    invisible="type != 'product'" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

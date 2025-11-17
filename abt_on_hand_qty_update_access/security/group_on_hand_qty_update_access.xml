@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="group_on_hand_qty_update_access" model="res.groups">
+            <field name="name">On Hand Qty Update Access</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+            <field name="comment">Grants access to the 'Update Quantity' button for specified user groups.</field>
+        </record>
+    </data>
+</odoo>
