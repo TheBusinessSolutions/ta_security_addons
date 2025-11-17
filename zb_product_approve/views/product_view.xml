@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="product_template_view_order_form_inherit_zb_product_approve" model="ir.ui.view">
+            <field name="name">product.template.form.zb.product.approve</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_only_form_view"/>
+            <field name="arch" type="xml">
+				<xpath expr="//header" position="inside">
+					<button id="button_verify" name="action_verify" string="Approve" class="btn-primary" invisible = "state == 'approved'" type="object" groups="zb_product_approve.group_verify_product"/>
+					<button id="button_set_to_draft" name="action_draft" string="Set to Draft" class="btn-primary" invisible = "state != 'approved'" type="object" groups="zb_product_approve.group_verify_product"/>
+					<field name="state" widget="statusbar"/>
+				</xpath>
+           </field>
+       	</record>
+       	<record id="product_product_view_order_form_inherit_zb_product_approve" model="ir.ui.view">
+            <field name="name">product.product.form.zb.product.approve</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+				<xpath expr="//header" position="inside">
+					<button id="button_verify" name="action_verify" string="Approve" class="btn-primary" invisible = "state == 'approved'" type="object" groups="zb_product_approve.group_verify_product"/>
+					<button id="button_set_to_draft" name="action_draft" string="Set to Draft" class="btn-primary" invisible = "state != 'approved'" type="object" groups="zb_product_approve.group_verify_product"/>
+					<field name="state" widget="statusbar"/>
+				</xpath>
+           </field>
+       	</record>
+       
+       	<record id="product_template_view_tree_inherit_zb_product_approve" model="ir.ui.view">
+            <field name="name">product.template.tree.zb.product.approve</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_tree_view"/>
+            <field name="arch" type="xml">
+				<xpath expr="//field[@name='uom_id']" position="after">
+					<button name="action_verify" string="Approve" class="btn-primary" type="object" groups="zb_product_approve.group_verify_product" invisible = "state == 'approved'"/>
+					<field name="state" widget="badge" decoration-danger="state=='draft'" decoration-success="state=='approved'" optional="show" />
+				</xpath>
+           </field>
+       	</record>
+       	
+       	<record id="product_product_view_tree_inherit_zb_product_approve" model="ir.ui.view">
+            <field name="name">product.product.tree.zb.product.approve</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+				<xpath expr="//field[@name='virtual_available']" position="after">
+					<button name="action_verify" string="Approve" class="btn-primary" type="object" groups="zb_product_approve.group_verify_product" invisible = "state == 'approved'"/>
+					<field name="state" widget="badge" decoration-danger="state=='draft'" decoration-success="state=='approved'" optional="show" />
+				</xpath>
+           </field>
+       	</record>
+       
+       <record id="action_draft_all" model="ir.actions.server">
+			<field name="name">Set to Draft</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_product_template"/>
+			<field name="binding_model_id" ref="model_product_template" />
+			<field name="state">code</field>
+			<field name="code">records.action_draft()</field>
+			<field name="binding_view_types">list</field>
+			<field name="groups_id" eval="[(4, ref('zb_product_approve.group_verify_product'))]"/>
+		</record>
+		
+		<record id="action_verify_all" model="ir.actions.server">
+			<field name="name">Approve</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_product_template"/>
+			<field name="binding_model_id" ref="model_product_template" />
+			<field name="state">code</field>
+			<field name="code">records.action_verify()</field>
+			<field name="binding_view_types">list</field>
+			<field name="groups_id" eval="[(4, ref('zb_product_approve.group_verify_product'))]"/>
+		</record>
+		
+		<record id="action_draft_all_product" model="ir.actions.server">
+			<field name="name">Set to Draft</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_product_product"/>
+			<field name="binding_model_id" ref="model_product_product" />
+			<field name="state">code</field>
+			<field name="code">records.action_draft()</field>
+			<field name="binding_view_types">list</field>
+			<field name="groups_id" eval="[(4, ref('zb_product_approve.group_verify_product'))]"/>
+			
+		</record>
+		
+		<record id="action_verify_all_product" model="ir.actions.server">
+			<field name="name">Approve</field>
+			<field name="type">ir.actions.server</field>
+			<field name="model_id" ref="model_product_product"/>
+			<field name="binding_model_id" ref="model_product_product" />
+			<field name="state">code</field>
+			<field name="code">records.action_verify()</field>
+			<field name="binding_view_types">list</field>
+			<field name="groups_id" eval="[(4, ref('zb_product_approve.group_verify_product'))]"/>
+		</record>
+		
+		<record id="product_template_search_view_inherit_zb_product_approve" model="ir.ui.view">
+            <field name="name">product.template.search.view.inherit.zb.product.approve</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+			   	<xpath expr="//search/group" 
+			    	   position="inside">
+			    	<filter string="State" 
+			    			name="state" 
+			    			context="{'group_by':'state'}"/>	
+			   	</xpath>
+			</field>
+		</record>
+	</data>
+</odoo>
