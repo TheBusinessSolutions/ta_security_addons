@@ -1,0 +1,12 @@
+<odoo>
+  <record id="view_order_form_inherit_remove_zero_qty_lines" model="ir.ui.view">
+      <field name="name">sale.order.form.remove.zero.qty.lines</field>
+      <field name="model">sale.order</field>
+      <field name="inherit_id" ref="sale.view_order_form"/>
+      <field name="arch" type="xml">
+          <header>
+              <button name="action_remove_zero_quantity_lines" string="Delete lines with zero quantity" type="object" class="btn-primary"/>
+          </header>
+      </field>
+  </record>
+</odoo>
