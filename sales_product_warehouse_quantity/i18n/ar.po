@@ -1,0 +1,80 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sales_product_warehouse_quantity
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-18 15:58+0000\n"
+"PO-Revision-Date: 2025-11-18 18:01+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Generator: Poedit 3.5\n"
+
+#. module: sales_product_warehouse_quantity
+#: model:ir.model.fields,field_description:sales_product_warehouse_quantity.field_sale_product_warehouse_quantity__create_uid
+msgid "Created by"
+msgstr "تم الانشاء بواسطه"
+
+#. module: sales_product_warehouse_quantity
+#: model:ir.model.fields,field_description:sales_product_warehouse_quantity.field_sale_product_warehouse_quantity__create_date
+msgid "Created on"
+msgstr "تم الانشاء في"
+
+#. module: sales_product_warehouse_quantity
+#: model:ir.model.fields,field_description:sales_product_warehouse_quantity.field_sale_product_warehouse_quantity__display_name
+msgid "Display Name"
+msgstr "الاسم"
+
+#. module: sales_product_warehouse_quantity
+#: model_terms:ir.ui.view,arch_db:sales_product_warehouse_quantity.view_product_wareouse_quantity
+msgid "Done"
+msgstr "منتهي"
+
+#. module: sales_product_warehouse_quantity
+#: model:ir.model.fields,field_description:sales_product_warehouse_quantity.field_sale_product_warehouse_quantity__id
+msgid "ID"
+msgstr ""
+
+#. module: sales_product_warehouse_quantity
+#: model:ir.model.fields,field_description:sales_product_warehouse_quantity.field_sale_product_warehouse_quantity__write_uid
+msgid "Last Updated by"
+msgstr "اخر تحديث بواسطه"
+
+#. module: sales_product_warehouse_quantity
+#: model:ir.model.fields,field_description:sales_product_warehouse_quantity.field_sale_product_warehouse_quantity__write_date
+msgid "Last Updated on"
+msgstr "اخر تحديث في"
+
+#. module: sales_product_warehouse_quantity
+#: model_terms:ir.ui.view,arch_db:sales_product_warehouse_quantity.view_sale_order_line_inherit_sale_warehouse_quantity
+msgid "Quantity in Warehouse"
+msgstr "الكميه المتاحه في المخازن"
+
+#. module: sales_product_warehouse_quantity
+#: model:ir.actions.act_window,name:sales_product_warehouse_quantity.action_view_warehouse_quantity
+msgid "Sale Product Warehouse Quantity"
+msgstr "كميه المتاحه في المخزن لامر البيع"
+
+#. module: sales_product_warehouse_quantity
+#: model:ir.model,name:sales_product_warehouse_quantity.model_sale_order_line
+msgid "Sales Order Line"
+msgstr ""
+
+#. module: sales_product_warehouse_quantity
+#: model:ir.model,name:sales_product_warehouse_quantity.model_sale_product_warehouse_quantity
+#: model_terms:ir.ui.view,arch_db:sales_product_warehouse_quantity.view_product_wareouse_quantity
+msgid "Sales Product Warehouse Quantity"
+msgstr ""
+
+#. module: sales_product_warehouse_quantity
+#: model:ir.model.fields,field_description:sales_product_warehouse_quantity.field_sale_order_line__warehouse_quantity
+#: model:ir.model.fields,field_description:sales_product_warehouse_quantity.field_sale_product_warehouse_quantity__warehouse_quantity
+msgid "Stock Quantity per Warehouse"
+msgstr "الكميه المتاحه في كل مخزن"
