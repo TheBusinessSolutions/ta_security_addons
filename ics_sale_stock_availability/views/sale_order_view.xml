@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Héritage de la vue de formulaire de la commande de vente -->
+        <record id="view_order_form_inherit_stock_availability" model="ir.ui.view">
+            <field name="name">sale.order.form.stock.availability</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <!-- Ajout de la colonne 'Stock Availability' après la colonne 'Product' -->
+                <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="before">
+                    <field name="stock_availability" string="Stock Availability"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
+
+
