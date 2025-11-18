@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 17.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-18 15:58+0000\n"
-"PO-Revision-Date: 2025-11-18 18:01+0200\n"
+"PO-Revision-Date: 2025-11-18 18:14+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ar\n"
@@ -55,7 +55,7 @@ msgstr "اخر تحديث في"
 #. module: sales_product_warehouse_quantity
 #: model_terms:ir.ui.view,arch_db:sales_product_warehouse_quantity.view_sale_order_line_inherit_sale_warehouse_quantity
 msgid "Quantity in Warehouse"
-msgstr "الكميه المتاحه في المخازن"
+msgstr ""
 
 #. module: sales_product_warehouse_quantity
 #: model:ir.actions.act_window,name:sales_product_warehouse_quantity.action_view_warehouse_quantity
