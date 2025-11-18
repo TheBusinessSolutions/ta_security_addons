@@ -1,6 +1,6 @@
 {
     'name': 'Stock Availability in Sales Order',
-    'version': '16.0.0.1.0',
+    'version': '17.0.0.1.0',
     'summary': 'Display stock availability of products in different locations within the sales order lines.',
     'description': """
         This module allows users to see the availability of products in different stock locations directly within the sales order lines.
