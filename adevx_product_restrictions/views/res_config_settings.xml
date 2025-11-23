@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+
+        <record id="res_config_settings_view_form" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.digest</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='contacts_settings']" position="before">
+                    <block title="Product POS">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="available_in_pos" help="Available In Pos Tool Tip"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="available_in_pos"/>
+                                <div class="text-muted">
+                                    Set Product Available In Pos Checked
+                                </div>
+                                <div class="col-12 col-lg-6 o_setting_box">
+                                    <div class="o_setting_left_pane">
+                                        <field name="force_in_pos" help="Force In Pos Tool Tip"/>
+                                    </div>
+                                    <div class="o_setting_right_pane">
+                                        <label for="force_in_pos"/>
+                                        <div class="text-muted">
+                                            Force Set In Pos Checked
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </block>
+                    <block title="Product Category">
+                        <setting class="col-12 col-lg-6 o_setting_box" string="Same Product Category &amp; Pos Category"
+                                 help=" Make Product &amp; Pos Category To Be The Same">
+                            <field name="product_pos_categ"/>
+                        </setting>
+
+                        <setting class="col-12 col-lg-6 o_setting_box"
+                                 help="Chose Category To Set Default in Product Template Category">
+                            <field name="categ_id"/>
+                        </setting>
+
+                        <setting class="col-xs-12 col-md-6 o_setting_box" string="Inventory Valuation"
+                                 help="Set Inventory Valuation">
+                            <field name="property_valuation"/>
+                            <br/>
+                            <br/>
+                            <div class="content-group">
+                                <div class="d-flex">
+                                    <field name="force_valuation" class="ml16"/>
+                                    <label for="force_valuation" string="Force Inventory Valuation"
+                                           class="o_light_label"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting class="col-12 col-lg-6 o_setting_box" string="Costing Method"
+                                 help=" Set Costing Method">
+                            <field name="property_cost_method"/>
+                            <br/>
+                            <br/>
+                            <div class="content-group">
+                                <div class="d-flex">
+                                    <field name="force_cost_method" class="ml16"/>
+                                    <label for="force_cost_method" string="Force Cost Method"
+                                           class="o_light_label"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting class="col-xs-12 col-md-6 o_setting_box" string="Restricted Product Type"
+                                 help="Set Restricted Product Type">
+                            <field name="restricted_product_type"/>
+                            <br/>
+                            <br/>
+                            <div class="content-group">
+                                <div class="d-flex">
+                                    <field name="force_restricted_type" class="ml16"/>
+                                    <label for="force_restricted_type" string="Force Restricted Type"
+                                           class="o_light_label"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                </xpath>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>
