@@ -5,7 +5,7 @@
 {
     "name": "Purchase/Sale Barcode",
     "summary": "Add Product With Barcode at Purchase/Sale Order",
-    "version": "10.0.1.0.0",
+    "version": "17.0.1.0.0",
     "author": 'feddad.imad@gmail.com',
     "website": 'https://github.com/fedimad/odoo_modules',
     "category": "Purchase, Sale",
