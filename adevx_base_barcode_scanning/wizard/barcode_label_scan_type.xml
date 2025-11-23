@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="view_barcode_label_scan_type_form" model="ir.ui.view">
+            <field name="name">view.barcode.label.scan.type.form</field>
+            <field name="model">barcode.label.scan.type</field>
+            <field name="arch" type="xml">
+                <form string="Barcode Label Scan Type">
+                    <group>
+                        <group>
+                            <field name="scan_type"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button string="Apply" class="btn btn-primary" type="object" name="update_company_scan_type" />
+                        <button string="Cancel" class="btn-secondary" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_barcode_label_scan_type_view" model="ir.actions.act_window">
+            <field name="name">Barcode Label Scan Type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">barcode.label.scan.type</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_barcode_label_scan_type"
+                  name="Barcode Label Scan"
+                  action="adevx_base_barcode_scanning.action_barcode_label_scan_type_view"
+                  groups="adevx_base_barcode_scanning.group_barcode_label_scan_type"
+                   parent="base.menu_users"
+                  sequence="102"/>
+    </data>
+</odoo>

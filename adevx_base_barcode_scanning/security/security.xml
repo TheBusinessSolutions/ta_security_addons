@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- We generate new group to control visibility of remote sacn type menu -->
+        <record id="group_barcode_label_scan_type" model="res.groups">
+            <field name="name">Barcode Label Scan Type</field>
+            <field name="comment">Barcode Label Scan Type Tool Tip</field>
+        </record>
+
+    </data>
+</odoo>

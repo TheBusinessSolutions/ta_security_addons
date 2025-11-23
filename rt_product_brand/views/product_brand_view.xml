@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="product_brand_search_form_view" model="ir.ui.view">
+        <field name="name">product.brand.search.form</field>
+        <field name="model">product.brand</field>
+        <field name="arch" type="xml">
+            <search string="Product Brand">
+                <field name="name" />
+            </search>
+        </field>
+    </record>
+
+    <record id="action_open_brand_products" model="ir.actions.act_window">
+        <field name="name">Brand Products</field>
+        <field name="res_model">product.template</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">kanban,form,tree</field>
+        <field name="domain">[('brand_id', '=', active_id)]</field>
+    </record>
+    <record id="view_product_brand_form" model="ir.ui.view">
+        <field name="name">product.brand.form</field>
+        <field name="model">product.brand</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="%(action_open_brand_products)d"
+                            type="action"
+                            class="oe_stat_button"
+                            icon="fa-cubes">
+                            <field
+                                name="products_count"
+                                widget="statinfo"
+                                string="Products"
+                                context="{'default_brand_id': active_id}"
+                            />
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" string="Brand Name" class="oe_edit_only" />
+                        <h1>
+                            <field name="name" />
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="manufacturer_id" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_product_brand_tree" model="ir.ui.view">
+        <field name="name">product.brand.tree</field>
+        <field name="model">product.brand</field>
+        <field name="arch" type="xml">
+            <tree string="product.brand" expand="1">
+                <field name="name" />
+                <field name="manufacturer_id" />
+            </tree>
+        </field>
+    </record>
+    
+    <record id="view_product_brand_search" model="ir.ui.view">
+            <field name="name">product.brand.search</field>
+            <field name="model">product.brand</field>
+            <field eval="3" name="priority"/>
+            <field name="arch" type="xml">
+                <search string="Product Brand">
+                    <field name="manufacturer_id" />
+                    <field name="name"/>
+                    <filter name="group_manufacturer" string="Manufacturer" icon="terp-partner" context="{'group_by':'manufacturer_id'}"/>    
+                </search>
+            </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_product_brand">
+        <field name="name">Brand</field>
+        <field name="res_model">product.brand</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_product_brand_search"/>
+        <field name="context">{'search_default_group_manufacturer_id': 1}</field>
+    </record>
+    
+    <menuitem
+        name="Product Brands"
+        id="sale_menu_product_brand"
+        action="action_product_brand"
+        parent="sale.prod_config_main"
+    />
+
+    <menuitem
+        name="Product Brands"
+        id="stock_menu_product_brand"
+        action="action_product_brand"
+        parent="stock.menu_product_in_config_stock"
+    />
+</odoo>

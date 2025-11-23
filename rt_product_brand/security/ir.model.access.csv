@@ -1,0 +1,6 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_purchase_manager,product.brand purchase_manager,model_product_brand,purchase.group_purchase_manager,1,1,1,1
+access_sale_manager,product.brand sale_manager,model_product_brand,sales_team.group_sale_manager,1,1,1,1
+access_stock_manager,product.brand stock_manager,model_product_brand,stock.group_stock_manager,1,1,1,1
+access_product_brand_user,product.brand user,model_product_brand,base.group_user,1,0,0,0
+access_product_brand_manager,product.brand manager,model_product_brand,base.group_system,1,1,1,1
