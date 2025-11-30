@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- View Definition -->
+    <record id="data_cleaner_form_view" model="ir.ui.view">
+        <field name="name">data.cleaner.wizard.form</field>
+        <field name="model">data.cleaner</field>
+        <field name="arch" type="xml">
+            <form string="Smart Data Cleaner">
+            <div class="alert alert-warning" role="alert" attrs="{'invisible': [('clean_partners', '=', False)]}">
+                To remove Customers or Vendors, ensure they are not associated with any other tables.
+                You must first delete any data in the tables where these records are linked.
+            </div>
+
+                <group>
+                    <!-- General Cleanup Options -->
+                    <group string="General Options" colspan="4">
+                        <field name="clean_all_data" />
+                    </group>
+
+                    <!-- Sales &amp; Purchase Cleanup -->
+                    <group string="Sales &amp; Purchase Data" name="group_sales_purchases">
+                        <field name="clean_sales" string="Sales Orders &amp; Transfers" />
+                        <field name="clean_purchases" string="Purchase Orders &amp; Transfers" />
+                        <field name="clean_transfers" string="Stock Transfers Only" />
+                    </group>
+
+                    <!-- Accounting Cleanup -->
+                    <group string="Accounting Data" name="group_accounting">
+                        <field name="clean_invoices" string="Invoices &amp; Payments" />
+                        <field name="clean_journals" string="Journal Entries Only" />
+                        <field name="clean_accounts" string="Chart of Accounts" />
+                        <field name="clean_partners" string="Customers &amp; Vendors" />
+                    </group>
+
+                    <!-- Project &amp; Timesheet Cleanup -->
+                    <group string="Project Management Data" name="group_projects">
+                        <field name="clean_projects" string="Projects &amp; Tasks" />
+                        <field name="clean_timesheets" string="Timesheets Only" />
+                    </group>
+
+                    <!-- Manufacturing Cleanup -->
+                    <group string="Manufacturing Data" name="group_manufacturing">
+                        <field name="clean_boms" string="BOMs &amp; Manufacturing Orders" />
+                    </group>
+                </group>
+
+                <!-- Footer with Actions -->
+                <footer>
+                    <button name="execute_cleaning" string="Start Cleaning" type="object" class="btn-primary" confirm="Are you sure to clean the selected options?"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action Definition -->
+    <record id="data_cleaner_action_wizard" model="ir.actions.act_window">
+        <field name="name">Smart Data Cleaner</field>
+        <field name="res_model">data.cleaner</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Menu Definition -->
+    <menuitem id="data_cleaner_sub_menu" 
+              parent="base.menu_administration" 
+              action="data_cleaner_action_wizard" 
+              name="Smart Data Cleaner" 
+              sequence="2" />
+</odoo>
