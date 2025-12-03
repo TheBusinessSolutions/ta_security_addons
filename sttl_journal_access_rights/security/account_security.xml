@@ -1,44 +1,5 @@
 <odoo>
     <data>
-        <!-- Security Rule: Show Journal (account.journal) -->
-        <record id="journal_show_rule" model="ir.rule">
-            <field name="name">Journal: Assigned User or Unassigned</field>
-            <field name="model_id" ref="model_account_journal"/>
-            <!-- This rule only applies to standard accounting users, not the Admin/Superuser -->
-            <field name="groups" eval="[(4, ref('account.group_account_user'))]"/>
-            <field name="domain_force">[
-                '|',
-                ('journal_users', 'in', [user.id]),
-                ('journal_users', '=', False)
-            ]</field>
-            <!-- Perms: Allow reading all matching records -->
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
-
-        <!-- Security Rule: Show Journal Entry (account.move) -->
-        <record id="journal_entry_show_rule" model="ir.rule">
-            <field name="name">Journal Entry: Assigned Journal User or Unassigned Journal</field>
-            <field name="model_id" ref="model_account_move"/>
-            <!-- This rule only applies to standard accounting users -->
-            <field name="groups" eval="[(4, ref('account.group_account_user'))]"/>
-            <field name="domain_force">[
-                '|',
-                ('journal_id.journal_users', 'in', [user.id]),
-                ('journal_id.journal_users', '=', False)
-            ]</field>
-            <!-- Perms: Allow reading all matching records -->
-            <field name="perm_read" eval="True"/>
-            <field name="perm_write" eval="True"/>
-            <field name="perm_create" eval="False"/>
-            <field name="perm_unlink" eval="False"/>
-        </record>
-    </data>
-</odoo>
-<!-- <odoo>
-    <data>
         <record id="journal_show_rule" model="ir.rule">
             <field name="name">Show Journal</field>
             <field name="model_id" ref="model_account_journal"/>
@@ -59,4 +20,4 @@
             ]</field>
         </record>
     </data>
-</odoo> -->
+</odoo>
