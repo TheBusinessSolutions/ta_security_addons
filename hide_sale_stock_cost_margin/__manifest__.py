@@ -1,0 +1,25 @@
+{
+    "name": "Hide Sale Stock Cost Margin",
+    'version': '17.0.1.0.0',
+    'category': 'Sales/Sales',
+    "summary": "Hide Sale Stock Cost Margin",
+    'author': "THECH ERP",
+    "depends": [
+        "sale",
+        "sale_margin",
+        "sale_stock_margin",
+        "stock_account",
+    ],
+    "data": [
+        'security/security.xml',
+        'views/product_product_views.xml',
+        'views/product_template_views.xml',
+        'views/sale_order_views.xml',
+        'views/stock_quant_views.xml',
+    ],
+    'license': "LGPL-3",
+    'installable': True,
+    'application': True,
+    'auto_install': False,
+    'images': ['static/description/banner.png'],
+}

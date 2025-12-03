@@ -1,0 +1,231 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sale_margin_threshold
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-08-13 04:29+0000\n"
+"PO-Revision-Date: 2024-08-13 04:29+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sale_margin_threshold
+#. odoo-javascript
+#: code:addons/sale_margin_threshold/static/src/store/orderline.xml:0
+#, python-format
+msgid "*The price of this product is less than minimum sale price"
+msgstr "*Harga produk kurang dari harga jual minimum"
+
+#. module: sale_margin_threshold
+#: model_terms:ir.ui.view,arch_db:sale_margin_threshold.product_template_inherit_sale_margin_threshold
+#: model_terms:ir.ui.view,arch_db:sale_margin_threshold.wizard_margin_product_view_form
+msgid "<span class=\"oe_grey\"> %</span>"
+msgstr ""
+
+#. module: sale_margin_threshold
+#: model_terms:ir.ui.view,arch_db:sale_margin_threshold.wizard_margin_product_view_form
+msgid "Assign"
+msgstr "Menetapkan"
+
+#. module: sale_margin_threshold
+#: model_terms:ir.ui.view,arch_db:sale_margin_threshold.wizard_margin_product_view_form
+msgid "Assign Margin"
+msgstr "Tetapkan Margin"
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_pos_config__is_blocked_warning
+msgid "Blocked warning"
+msgstr "Peringatan diblokir"
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_res_config_settings__blocking_transaction_order
+msgid "Blocking Transaction Order"
+msgstr "Pemblokiran Transaksi Pesanan Penjualan"
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_res_config_settings__blocking_transaction_pos
+msgid "Blocking Transaction POS"
+msgstr "Pemblokiran Transaksi POS"
+
+#. module: sale_margin_threshold
+#: model_terms:ir.ui.view,arch_db:sale_margin_threshold.sale_confirmation_wizard_view_form
+#: model_terms:ir.ui.view,arch_db:sale_margin_threshold.wizard_margin_product_view_form
+msgid "Cancel"
+msgstr "Batalkan"
+
+#. module: sale_margin_threshold
+#: model:ir.model,name:sale_margin_threshold.model_res_config_settings
+msgid "Config Settings"
+msgstr "Pengaturan Konfigurasi"
+
+#. module: sale_margin_threshold
+#: model_terms:ir.ui.view,arch_db:sale_margin_threshold.sale_confirmation_wizard_view_form
+msgid "Confirm"
+msgstr "Mengkonfirmasi"
+
+#. module: sale_margin_threshold
+#: model_terms:ir.ui.view,arch_db:sale_margin_threshold.sale_confirmation_wizard_view_form
+msgid "Confirmation"
+msgstr "Konfirmasi"
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_sale_confirmation_wizard__create_uid
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_wizard_margin_product__create_uid
+msgid "Created by"
+msgstr "Dibuat oleh"
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_sale_confirmation_wizard__create_date
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_wizard_margin_product__create_date
+msgid "Created on"
+msgstr "Dibuat pada"
+
+#. module: sale_margin_threshold
+#. odoo-javascript
+#: code:addons/sale_margin_threshold/static/src/store/orderline.xml:0
+#: code:addons/sale_margin_threshold/static/src/store/orderline.xml:0
+#, python-format
+msgid "Customer Note"
+msgstr "Catatan Pelanggan"
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_sale_confirmation_wizard__display_name
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_wizard_margin_product__display_name
+msgid "Display Name"
+msgstr "Nama Tampilan"
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_sale_confirmation_wizard__id
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_wizard_margin_product__id
+msgid "ID"
+msgstr ""
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_sale_confirmation_wizard__write_uid
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_wizard_margin_product__write_uid
+msgid "Last Updated by"
+msgstr "Terakhir Diperbarui oleh"
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_sale_confirmation_wizard__write_date
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_wizard_margin_product__write_date
+msgid "Last Updated on"
+msgstr "Terakhir Diperbarui pada"
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_product_product__margin_sale
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_product_template__margin_sale
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_wizard_margin_product__margin
+msgid "Margin"
+msgstr "Margin"
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_sale_confirmation_wizard__message
+msgid "Message"
+msgstr "Pesan"
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_product_product__minimum_sale_price
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_product_template__minimum_sale_price
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_sale_order_line__minimum_sale_price
+msgid "Minimum sale price"
+msgstr "Harga jual minimum"
+
+#. module: sale_margin_threshold
+#. odoo-javascript
+#: code:addons/sale_margin_threshold/static/src/store/orderline.xml:0
+#: code:addons/sale_margin_threshold/static/src/store/orderline.xml:0
+#, python-format
+msgid "Note"
+msgstr "Catatan"
+
+#. module: sale_margin_threshold
+#: model:ir.model,name:sale_margin_threshold.model_pos_config
+msgid "Point of Sale Configuration"
+msgstr "Konfigurasi Point of Sale"
+
+#. module: sale_margin_threshold
+#: model:ir.model,name:sale_margin_threshold.model_pos_session
+msgid "Point of Sale Session"
+msgstr "Sesi Point of Sale"
+
+#. module: sale_margin_threshold
+#. odoo-javascript
+#: code:addons/sale_margin_threshold/static/src/store/models/models.js:0
+#: code:addons/sale_margin_threshold/static/src/store/models/models.js:0
+#, python-format
+msgid "Price unit less than minimum price"
+msgstr ""
+
+#. module: sale_margin_threshold
+#: model:ir.model,name:sale_margin_threshold.model_product_template
+msgid "Product"
+msgstr "Produk"
+
+#. module: sale_margin_threshold
+#: model:ir.model.fields,field_description:sale_margin_threshold.field_wizard_margin_product__product_template_ids
+msgid "Products"
+msgstr "Produk"
+
+#. module: sale_margin_threshold
+#: model:ir.model,name:sale_margin_threshold.model_sale_confirmation_wizard
+msgid "Sale confirmation wizard"
+msgstr "Panduan konfirmasi penjualan"
+
+#. module: sale_margin_threshold
+#: model:ir.model,name:sale_margin_threshold.model_sale_order
+msgid "Sales Order"
+msgstr "Order Penjualan"
+
+#. module: sale_margin_threshold
+#: model:ir.model,name:sale_margin_threshold.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Baris Pesanan Penjualan"
+
+#. module: sale_margin_threshold
+#: model:ir.model,name:sale_margin_threshold.model_wizard_margin_product
+msgid "Set margin on every product"
+msgstr "Tetapkan margin pada setiap produk"
+
+#. module: sale_margin_threshold
+#. odoo-javascript
+#: code:addons/sale_margin_threshold/static/src/store/models/models.js:0
+#: code:addons/sale_margin_threshold/static/src/store/models/models.js:0
+#, python-format
+msgid "Some products are below the minimum price. Proceed to payment?"
+msgstr "Beberapa produk harganya di bawah harga minimum. Lanjutkan ke pembayaran?"
+
+#. module: sale_margin_threshold
+#. odoo-python
+#: code:addons/sale_margin_threshold/models/product.py:0
+#: model:ir.actions.server,name:sale_margin_threshold.product_template_margin_sale_action_server
+#, python-format
+msgid "Update margin sale"
+msgstr ""
+
+#. module: sale_margin_threshold
+#: model_terms:ir.ui.view,arch_db:sale_margin_threshold.res_config_settings_view_form_sale_margin_threshold
+#: model_terms:ir.ui.view,arch_db:sale_margin_threshold.res_config_settings_view_form_sale_margin_sale
+msgid ""
+"Warning price less than minimum sale price will blocking the transaction."
+msgstr ""
+
+#. module: sale_margin_threshold
+#. odoo-javascript
+#: code:addons/sale_margin_threshold/static/src/store/orderline.xml:0
+#, python-format
+msgid "With a"
+msgstr "Dengan"
+
+#. module: sale_margin_threshold
+#. odoo-javascript
+#: code:addons/sale_margin_threshold/static/src/store/orderline.xml:0
+#, python-format
+msgid "discount"
+msgstr "diskon"

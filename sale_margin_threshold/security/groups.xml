@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="group_sale_margin_action" model="res.groups">
+        <field name="name">Sale Margin Action</field>
+        <field name="implied_ids" eval="[(4, ref('base.module_category_hidden'))]"/>
+    </record>
+</odoo>

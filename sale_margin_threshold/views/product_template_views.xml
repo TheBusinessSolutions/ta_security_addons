@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_template_inherit_sale_margin_threshold" model="ir.ui.view">
+        <field name="name">product.template.inherit.sale.margin.threshold</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <field name="list_price" position="replace">
+                <field name="list_price" decoration-danger="list_price &lt; minimum_sale_price" widget="monetary"/>
+            </field>
+            <field name="categ_id" position="before">
+                <field name="module_pos_margin_threshold" invisible="1"/>
+                <label for="margin_sale" invisible="module_pos_margin_threshold == True"/>
+                <div class="d-inline-block" invisible="module_pos_margin_threshold == True">
+                  <field name="margin_sale" widget="float" class="oe_inline o_input_6ch" decoration-danger="margin_sale &lt; 0.0"/>
+                  <span class="oe_grey"> %</span>
+                </div>
+                <field name="minimum_sale_price" widget="monetary" invisible="module_pos_margin_threshold == True"/>
+                <field name="minimum_sale_price_with_tax" widget="monetary" invisible="module_pos_margin_threshold == True"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

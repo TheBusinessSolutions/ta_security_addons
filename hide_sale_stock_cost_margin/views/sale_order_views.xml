@@ -1,0 +1,42 @@
+<odoo>
+
+    <record model="ir.ui.view" id="sale_margin_sale_order_line">
+        <field name="name">sale.order.line.margin.view.form.hide</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_margin.sale_margin_sale_order_line"/>
+        <field name="arch" type="xml">
+           <field name="purchase_price" position="attributes">
+             <attribute name="groups">hide_sale_stock_cost_margin.sale_cost_margin_hide_group</attribute>
+           </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="sale_margin_sale_order_line_form">
+        <field name="name">sale.order.line.list.margin.view.form.hide</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_margin.sale_margin_sale_order_line_form"/>
+        <field name="arch" type="xml">
+            <field name="purchase_price" position="attributes">
+                <attribute name="groups">hide_sale_stock_cost_margin.sale_cost_margin_hide_group</attribute>
+           </field>
+            <field name="margin" position="attributes">
+                <attribute name="groups">hide_sale_stock_cost_margin.sale_cost_margin_hide_group</attribute>
+           </field>
+            <field name="margin_percent" position="attributes">
+                <attribute name="groups">hide_sale_stock_cost_margin.sale_cost_margin_hide_group</attribute>
+           </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="sale_margin_sale_order">
+        <field name="name">sale.order.margin.view.form.hide</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_margin.sale_margin_sale_order"/>
+        <field name="arch" type="xml">
+           <xpath expr="//div[1]" position="attributes">
+             <attribute name="groups">hide_sale_stock_cost_margin.sale_cost_margin_hide_group</attribute>
+           </xpath>
+        </field>
+    </record>
+    
+</odoo>
