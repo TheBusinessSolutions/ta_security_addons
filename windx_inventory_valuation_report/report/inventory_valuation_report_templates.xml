@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+  <template id="report_inventory_valuation">
+    <t t-call="web.html_container">
+      <t t-call="web.external_layout">
+        <style>
+          h1.report-title {
+            text-align: center;
+            font-weight: bold;
+          }
+          table.inventory-table {
+            font-size: 12px;
+            table-layout: fixed;
+            width: 100%;
+            border-collapse: collapse;
+          }
+          .col-product {
+            min-width: 100px;
+            width: 100px;
+            word-wrap: break-word;
+          }
+          .col-location {
+            min-width: 80px;
+            width: 80px;
+            word-wrap: break-word;
+          }
+          .col-num {
+            min-width: 60px;
+            text-align: right;
+            word-wrap: break-word;
+          }
+        </style>
+        <!-- Page Header -->
+        <div class="page">
+          <h1 class="report-title" style="color: black;">
+            Inventory Valuation Report
+          </h1>
+          <div class="row mb-3" style="margin-bottom: 10px;">
+            <div class="col-6">
+              <strong>Date:</strong>
+              <span t-esc="docs[0].start_date.strftime('%d-%m-%Y')"/> To
+              <span t-esc="docs[0].end_date.strftime('%d-%m-%Y')"/>
+            </div>
+            <div class="col-6" style="text-align: right;">
+              <strong>Warehouse:</strong>
+              <span t-esc="', '.join(docs[0].warehouse_ids.mapped('name')) if docs[0].warehouse_ids else 'All Warehouses'"/>
+            </div>
+          </div>
+          <table class="table table-sm table-bordered inventory-table">
+            <thead>
+              <tr>
+                <th class="col-product">Product</th>
+                <th>Costing Method</th>
+                <t t-if="location"><th class="col-location">Location</th></t>
+                <th colspan="2">Beginning</th>
+                <th colspan="2">Received</th>
+                <th colspan="2">Sales</th>
+                <th colspan="2">Internal</th>
+                <th colspan="2">Adjustment</th>
+                <th colspan="2">Ending</th>
+              </tr>
+              <tr>
+                <th></th>
+                <th></th>
+                <t t-if="location"><th></th></t>
+                <th class="col-num">Qty</th><th class="col-num">Value</th>
+                <th class="col-num">Qty</th><th class="col-num">Value</th>
+                <th class="col-num">Qty</th><th class="col-num">Value</th>
+                <th class="col-num">Qty</th><th class="col-num">Value</th>
+                <th class="col-num">Qty</th><th class="col-num">Value</th>
+                <th class="col-num">Qty</th><th class="col-num">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-if="group_by_categories == True">
+                <t t-foreach="products" t-as="cat">
+                  <tr>
+                    <td colspan="15" style="background-color: #d9d9d9;"><t t-esc="cat['category_name']"/></td>
+                  </tr>
+                  <t t-foreach="cat['products']" t-as="prod">
+                    <!-- Total Line -->
+                    <tr style="align-items: left;">
+                      <td><t t-esc="prod['name']"/></td>
+                      <td><t t-esc="prod['costing_method']"/></td>
+                      <t t-if="location"><td></td></t>
+                      <td><t t-esc="prod['totals']['begin_qty']"/></td>
+                      <td><t t-esc="prod['totals']['begin_value']"/></td>
+                      <td><t t-esc="prod['totals']['received_qty']"/></td>
+                      <td><t t-esc="prod['totals']['received_value']"/></td>
+                      <td><t t-esc="prod['totals']['sales_qty']"/></td>
+                      <td><t t-esc="prod['totals']['sales_value']"/></td>
+                      <td><t t-esc="prod['totals']['internal_qty']"/></td>
+                      <td><t t-esc="prod['totals']['internal_value']"/></td>
+                      <td><t t-esc="prod['totals']['adjustment_qty']"/></td>
+                      <td><t t-esc="prod['totals']['adjustment_value']"/></td>
+                      <td><t t-esc="prod['totals']['ending_qty']"/></td>
+                      <td><t t-esc="prod['totals']['ending_value']"/></td>
+                    </tr>
+                    <!-- location Rows -->
+                    <tr t-if="location" t-foreach="prod['sub_products']" t-as="sub">
+                      <td></td>
+                      <td></td>
+                      <t t-if="location"><td><t t-esc="sub['location']"/></td></t>
+                      <td><t t-esc="sub['begin_qty']"/></td>
+                      <td><t t-esc="sub['begin_value']"/></td>
+                      <td><t t-esc="sub['received_qty']"/></td>
+                      <td><t t-esc="sub['received_value']"/></td>
+                      <td><t t-esc="sub['sales_qty']"/></td>
+                      <td><t t-esc="sub['sales_value']"/></td>
+                      <td><t t-esc="sub['internal_qty']"/></td>
+                      <td><t t-esc="sub['internal_value']"/></td>
+                      <td><t t-esc="sub['adjustment_qty']"/></td>
+                      <td><t t-esc="sub['adjustment_value']"/></td>
+                      <td><t t-esc="sub['ending_qty']"/></td>
+                      <td><t t-esc="sub['ending_value']"/></td>
+                    </tr>
+                  </t>
+                  <!-- Category Subtotal -->
+                  <tr class="total" style="background-color: #d9d9d9;">
+                    <td>Total:</td>
+                    <td></td>
+                    <t t-if="location"><td></td></t>
+                    <td><t t-esc="cat['subtotal']['begin_qty']"/></td>
+                    <td><t t-esc="cat['subtotal']['begin_value']"/></td>
+                    <td><t t-esc="cat['subtotal']['received_qty']"/></td>
+                    <td><t t-esc="cat['subtotal']['received_value']"/></td>
+                    <td><t t-esc="cat['subtotal']['sales_qty']"/></td>
+                    <td><t t-esc="cat['subtotal']['sales_value']"/></td>
+                    <td><t t-esc="cat['subtotal']['internal_qty']"/></td>
+                    <td><t t-esc="cat['subtotal']['internal_value']"/></td>
+                    <td><t t-esc="cat['subtotal']['adjustment_qty']"/></td>
+                    <td><t t-esc="cat['subtotal']['adjustment_value']"/></td>
+                    <td><t t-esc="cat['subtotal']['ending_qty']"/></td>
+                    <td><t t-esc="cat['subtotal']['ending_value']"/></td>
+                  </tr>
+                </t>
+              </t>
+              <!-- If NOT grouped by category -->
+              <t t-else="">
+                <t t-foreach="products" t-as="prod">
+                  <tr style="align-items: left;">
+                    <td><t t-esc="prod['name']"/></td>
+                    <td><t t-esc="prod['costing_method']"/></td>
+                    <t t-if="location"><td></td></t>
+                    <td><t t-esc="prod['totals']['begin_qty']"/></td>
+                    <td><t t-esc="prod['totals']['begin_value']"/></td>
+                    <td><t t-esc="prod['totals']['received_qty']"/></td>
+                    <td><t t-esc="prod['totals']['received_value']"/></td>
+                    <td><t t-esc="prod['totals']['sales_qty']"/></td>
+                    <td><t t-esc="prod['totals']['sales_value']"/></td>
+                    <td><t t-esc="prod['totals']['internal_qty']"/></td>
+                    <td><t t-esc="prod['totals']['internal_value']"/></td>
+                    <td><t t-esc="prod['totals']['adjustment_qty']"/></td>
+                    <td><t t-esc="prod['totals']['adjustment_value']"/></td>
+                    <td><t t-esc="prod['totals']['ending_qty']"/></td>
+                    <td><t t-esc="prod['totals']['ending_value']"/></td>
+                  </tr>
+                  <!-- location Rows -->
+                  <tr t-if="location" style="align-items: left;" t-foreach="prod['sub_products']" t-as="sub">
+                    <td></td>
+                    <td></td>
+                    <t t-if="location"><td><t t-esc="sub['location']"/></td></t>
+                    <td><t t-esc="sub['begin_qty']"/></td>
+                    <td><t t-esc="sub['begin_value']"/></td>
+                    <td><t t-esc="sub['received_qty']"/></td>
+                    <td><t t-esc="sub['received_value']"/></td>
+                    <td><t t-esc="sub['sales_qty']"/></td>
+                    <td><t t-esc="sub['sales_value']"/></td>
+                    <td><t t-esc="sub['internal_qty']"/></td>
+                    <td><t t-esc="sub['internal_value']"/></td>
+                    <td><t t-esc="sub['adjustment_qty']"/></td>
+                    <td><t t-esc="sub['adjustment_value']"/></td>
+                    <td><t t-esc="sub['ending_qty']"/></td>
+                    <td><t t-esc="sub['ending_value']"/></td>
+                  </tr>
+                </t>
+                <!-- Grand Total Row -->
+                <tr class="total" style="align-items: left; background-color: #d9d9d9;">
+                  <td>Total</td>
+                  <td></td>
+                  <t t-if="location"><td></td></t>
+                  <td><t t-esc="grand_total['begin_qty']"/></td>
+                  <td><t t-esc="grand_total['begin_value']"/></td>
+                  <td><t t-esc="grand_total['received_qty']"/></td>
+                  <td><t t-esc="grand_total['received_value']"/></td>
+                  <td><t t-esc="grand_total['sales_qty']"/></td>
+                  <td><t t-esc="grand_total['sales_value']"/></td>
+                  <td><t t-esc="grand_total['internal_qty']"/></td>
+                  <td><t t-esc="grand_total['internal_value']"/></td>
+                  <td><t t-esc="grand_total['adjustment_qty']"/></td>
+                  <td><t t-esc="grand_total['adjustment_value']"/></td>
+                  <td><t t-esc="grand_total['ending_qty']"/></td>
+                  <td><t t-esc="grand_total['ending_value']"/></td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
+        </div>
+      </t>
+    </t>
+  </template>
+</odoo>

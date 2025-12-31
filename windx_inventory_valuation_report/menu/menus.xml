@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <menuitem id="menu_inventory_valuation_report_accountant"
+        name="Inventory Valuation Report"
+        parent="stock.menu_stock_root"
+        action="action_inventory_valuation_wizard"
+        groups="stock.group_stock_user,stock.group_stock_manager"
+        sequence="50"/>
+</odoo>

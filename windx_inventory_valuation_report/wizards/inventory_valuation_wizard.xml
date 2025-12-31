@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--form view-->
+    <record id="view_inventory_valuation_wizard_form" model="ir.ui.view">
+        <field name="name">Inventory valuation wizard form</field>
+        <field name="model">inventory.valuation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Inventory Valuation Report">
+                <sheet>
+                    <group>
+                        <field name="start_date" required="1"/>
+                        <field name="end_date" required="1"/>
+                        <field name="warehouse_ids" widget="many2many_tags"
+                            options="{'no_open': True, 'no_create': True}" required="1"/>
+                        <field name="location_domain" invisible="1"/>
+                        <field name="location_ids" widget="many2many_tags"
+                            options="{'no_create': True}" domain="location_domain"/>
+                        <field name="filter_by"/>
+                        <field name="product_ids" widget="many2many_tags" invisible="filter_by != 'product'"/>
+                        <field name="category_ids" widget="many2many_tags" invisible="filter_by != 'category'"/>
+                        <field name="group_by_category"/>
+                    </group>
+                    <footer>
+                        <button name="action_export_pdf" string="Generate PDF" type="object" class="btn-primary"/>
+                        <button name="action_export_xlsx" string="Generate Excel" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!--Action-->
+    <record id="action_inventory_valuation_wizard" model="ir.actions.act_window">
+        <field name="name">Inventory Valuation Report</field>
+        <field name="res_model">inventory.valuation.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

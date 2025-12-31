@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- PDF Report Action -->
+    <record id="action_inventory_valuation_pdf" model="ir.actions.report">
+        <field name="name">Inventory Valuation PDF</field>
+        <field name="model">inventory.valuation.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">windx_inventory_valuation_report.report_inventory_valuation</field>
+        <field name="report_file">windx_inventory_valuation_report.report_inventory_valuation</field>
+        <field name="print_report_name">'Inventory-valuation-report'</field>
+    </record>
+</odoo>
