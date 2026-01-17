@@ -1,0 +1,15 @@
+<odoo>
+  <record id="mrp_production_workorder_tree_view_inherit" model="ir.ui.view">
+    <field name="name">mrp.production.workorder.tree.view.inherit.only_ready</field>
+    <field name="model">mrp.workorder</field>
+    <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_view"/>
+    <field name="arch" type="xml">
+      
+      <!-- Show Start button only when state == ready -->
+      <xpath expr="//button[@name='button_start']" position="attributes">
+        <attribute name="attrs">{'invisible': [('state', '!=', 'ready')]}</attribute>
+      </xpath>
+
+    </field>
+  </record>
+</odoo>
