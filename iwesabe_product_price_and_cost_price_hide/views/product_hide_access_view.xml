@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+	<record id="tree_product_hide_access_view" model="ir.ui.view">
+		<field name="name">product.hide.access.tree</field>
+		<field name="model">product.hide.access</field>
+		<field name="type">tree</field>
+		<field name="arch" type="xml">
+			<tree string="Product Hide Cost/Price" editable="top">
+                <field name="user_ids" widget="many2many_tags" required="1"/>
+                <field name="hide_price" widget="boolean_toggle"/>
+                <field name="hide_cost" widget="boolean_toggle"/>
+			</tree>
+		</field>
+	</record>
+
+
+	<record id="action_product_hide_access" model="ir.actions.act_window">
+            <field name="name">Product Hide Cost/Price</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">product.hide.access</field>
+            <field name="view_mode">tree</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click here to create a new Product
+                </p>
+            </field>
+        </record>
+
+	<menuitem action="action_product_hide_access"
+			  id="menu_product_hide_access"
+			  parent="stock.menu_stock_inventory_control"
+			  name="Hides Cost/Sale Price" groups="stock.group_stock_manager"/>
+
+
+
+
+
+</odoo>
