@@ -53,11 +53,33 @@ class HrPayslip(models.Model):
                             result['loan_line_id'] = loan_line.id
         return res
 
+    # def action_payslip_done(self):
+    #     """ Compute the loan amount and remaining amount while confirming
+    #         the payslip"""
+    #     for line in self.input_line_ids:
+    #         if line.loan_line_id:
+    #             line.loan_line_id.paid = True
+    #             line.loan_line_id.loan_id._compute_total_amount()
+    #     return super(HrPayslip, self).action_payslip_done()
     def action_payslip_done(self):
-        """ Compute the loan amount and remaining amount while confirming
-            the payslip"""
-        for line in self.input_line_ids:
-            if line.loan_line_id:
-                line.loan_line_id.paid = True
-                line.loan_line_id.loan_id._compute_total_amount()
+        """ Mark loan installment as paid when payslip is confirmed """
+        for payslip in self:
+            for line in payslip.input_line_ids:
+                if line.code == 'LO' and line.amount != 0:
+                    # Find and link the loan line if missing
+                    if not line.loan_line_id:
+                        loan_line = self.env['hr.loan.line'].search([
+                            ('employee_id', '=', payslip.employee_id.id),
+                            ('date', '>=', payslip.date_from),
+                            ('date', '<=', payslip.date_to),
+                            ('paid', '=', False)
+                        ], limit=1)
+                        if loan_line:
+                            line.loan_line_id = loan_line.id
+                    
+                    # Mark as paid - this will auto-trigger loan balance recalculation
+                    if line.loan_line_id:
+                        line.loan_line_id.paid = True
+                        # No need to manually call _compute_total_amount() anymore!
+                        
         return super(HrPayslip, self).action_payslip_done()
