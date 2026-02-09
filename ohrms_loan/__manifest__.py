@@ -39,8 +39,8 @@
     'author': 'Your Company',
     'depends': [
         'hr',
-        'hr_payroll',
-        'hr_payroll_account',
+        'hr_payroll_community',
+        'hr_payroll_account_community',
         'account',
     ],
     'data': [
