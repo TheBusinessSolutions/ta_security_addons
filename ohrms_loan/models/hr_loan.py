@@ -99,18 +99,29 @@ class HrLoan(models.Model):
          ], string="State", default='draft', help="The current state of the "
                                                   "loan request.", copy=False)
 
+    # def _compute_total_amount(self):
+    #     """ Compute total loan amount,balance amount and total paid amount"""
+    #     total_paid = 0.0
+    #     for loan in self:
+    #         for line in loan.loan_lines:
+    #             if line.paid:
+    #                 total_paid += line.amount
+    #         balance_amount = loan.loan_amount - total_paid
+    #         loan.total_amount = loan.loan_amount
+    #         loan.balance_amount = balance_amount
+    #         loan.total_paid_amount = total_paid
+    @api.depends('loan_lines.paid', 'loan_lines.amount', 'loan_amount')
     def _compute_total_amount(self):
-        """ Compute total loan amount,balance amount and total paid amount"""
-        total_paid = 0.0
+        """ Compute total loan amount, balance amount and total paid amount"""
         for loan in self:
+            total_paid = 0.0
             for line in loan.loan_lines:
                 if line.paid:
                     total_paid += line.amount
-            balance_amount = loan.loan_amount - total_paid
+            
             loan.total_amount = loan.loan_amount
-            loan.balance_amount = balance_amount
             loan.total_paid_amount = total_paid
-
+            loan.balance_amount = loan.loan_amount - total_paid
     @api.model
     def create(self, values):
         """ Check whether any pending loan is for the employee and calculate
