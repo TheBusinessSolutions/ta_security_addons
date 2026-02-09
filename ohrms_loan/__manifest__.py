@@ -37,12 +37,8 @@
         * Support for multiple payment methods
     """,
     'author': 'Your Company',
-    'depends': [
-        'hr',
-        'hr_payroll_community',
-        'hr_payroll_account_community',
-        'account',
-    ],
+    'depends': ['hr', 'account', 'hr_payroll_community'],
+
     'data': [
         'security/ir.model.access.csv',
         'data/sequence.xml',
