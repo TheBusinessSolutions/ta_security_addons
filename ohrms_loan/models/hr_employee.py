@@ -26,27 +26,28 @@ from odoo import fields, models, _
 class HrEmployee(models.Model):
     """Extends the 'hr.employee' model to include loan_count."""
     _inherit = "hr.employee"
-
+    
     loan_count = fields.Integer(
         string="Loan Count",
         help="Number of loans associated with the employee",
-        compute='_compute_loan_count')
-
+        compute='_compute_loan_count'
+    )
+    
     def _compute_loan_count(self):
         """Compute the number of loans associated with the employee."""
-        self.loan_count = self.env['hr.loan'].search_count(
-            [('employee_id', '=', self.id)])
-
+        for employee in self:
+            employee.loan_count = self.env['hr.loan'].search_count(
+                [('employee_id', '=', employee.id)]
+            )
+    
     def action_loan_view(self):
-        """ Opens a view to list all documents related to the current
-         employee."""
+        """ Opens a view to list all loans related to the current employee."""
         self.ensure_one()
         return {
-            'name': _('Loan'),
+            'name': _('Loans'),
             'domain': [('employee_id', '=', self.id)],
             'res_model': 'hr.loan',
             'type': 'ir.actions.act_window',
-            'view_id': False,
             'view_mode': 'tree,form',
             'help': _('''<p class="oe_view_nocontent_create">
                            Click to Create for New Loan
@@ -54,5 +55,3 @@ class HrEmployee(models.Model):
             'limit': 80,
             'context': "{'default_employee_id': %s}" % self.id
         }
-
-

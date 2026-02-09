@@ -23,57 +23,117 @@ class HrLoan(models.Model):
             [('user_id', '=', user_id)], limit=1).id
         return result
 
-    name = fields.Char(string="Loan Name", default="New", readonly=True,
-                       help="Name of the loan", tracking=True)
-    date = fields.Date(string="Date", default=fields.Date.today(),
-                       readonly=True, help="Date of the loan request")
-    employee_id = fields.Many2one('hr.employee', string="Employee",
-                                  required=True, help="Employee Name",
-                                  tracking=True)
-    department_id = fields.Many2one('hr.department',
-                                    related="employee_id.department_id",
-                                    readonly=True, string="Department",
-                                    help="The department to which the employee belongs.")
-    installment = fields.Integer(string="No Of Installments", default=1,
-                                 help="Number of installments")
-    payment_date = fields.Date(string="Payment Start Date", required=True,
-                               default=fields.Date.today(),
-                               help="Date of the first payment")
-    loan_lines = fields.One2many('hr.loan.line', 'loan_id',
-                                 string="Loan Installments",
-                                 help="Installment schedule")
-    payment_lines = fields.One2many('hr.loan.payment', 'loan_id',
-                                   string="Direct Payments",
-                                   help="Direct payments made outside payslip")
-    company_id = fields.Many2one('res.company', string='Company',
-                                 help="Company",
-                                 default=lambda self: self.env.user.company_id)
-    currency_id = fields.Many2one('res.currency', string='Currency',
-                                  required=True, help="Currency",
-                                  default=lambda self: self.env.user.company_id.currency_id)
-    job_position = fields.Many2one('hr.job',
-                                   related="employee_id.job_id",
-                                   readonly=True, string="Job Position",
-                                   help="Job position of the employee")
-    loan_amount = fields.Float(string="Loan Amount", required=True,
-                               help="Total loan amount", tracking=True)
-    total_amount = fields.Float(string="Total Amount", store=True,
-                                readonly=True, compute='_compute_total_amount',
-                                help="The total amount of the loan")
-    balance_amount = fields.Float(string="Balance Amount", store=True,
-                                  compute='_compute_total_amount',
-                                  help="Remaining balance to be paid",
-                                  tracking=True)
-    total_paid_amount = fields.Float(string="Total Paid Amount", store=True,
-                                     compute='_compute_total_amount',
-                                     help="Total amount paid (payslip + direct)",
-                                     tracking=True)
-    payslip_paid_amount = fields.Float(string="Paid via Payslip", store=True,
-                                       compute='_compute_total_amount',
-                                       help="Amount paid through payslip deductions")
-    direct_paid_amount = fields.Float(string="Paid Directly", store=True,
-                                      compute='_compute_total_amount',
-                                      help="Amount paid directly (outside payslip)")
+    name = fields.Char(
+        string="Loan Name", 
+        default="New", 
+        readonly=True,
+        help="Name of the loan", 
+        tracking=True
+    )
+    date = fields.Date(
+        string="Date", 
+        default=fields.Date.today(),
+        readonly=True, 
+        help="Date of the loan request"
+    )
+    employee_id = fields.Many2one(
+        'hr.employee', 
+        string="Employee",
+        required=True, 
+        help="Employee Name",
+        tracking=True
+    )
+    department_id = fields.Many2one(
+        'hr.department',
+        related="employee_id.department_id",
+        readonly=True, 
+        string="Department",
+        help="The department to which the employee belongs.",
+        store=True
+    )
+    installment = fields.Integer(
+        string="No Of Installments", 
+        default=1,
+        help="Number of installments"
+    )
+    payment_date = fields.Date(
+        string="Payment Start Date", 
+        required=True,
+        default=fields.Date.today(),
+        help="Date of the first payment"
+    )
+    loan_lines = fields.One2many(
+        'hr.loan.line', 
+        'loan_id',
+        string="Loan Installments",
+        help="Installment schedule"
+    )
+    payment_lines = fields.One2many(
+        'hr.loan.payment', 
+        'loan_id',
+        string="Direct Payments",
+        help="Direct payments made outside payslip"
+    )
+    company_id = fields.Many2one(
+        'res.company', 
+        string='Company',
+        help="Company",
+        default=lambda self: self.env.user.company_id
+    )
+    currency_id = fields.Many2one(
+        'res.currency', 
+        string='Currency',
+        required=True, 
+        help="Currency",
+        default=lambda self: self.env.user.company_id.currency_id
+    )
+    job_position = fields.Many2one(
+        'hr.job',
+        related="employee_id.job_id",
+        readonly=True, 
+        string="Job Position",
+        help="Job position of the employee",
+        store=True
+    )
+    loan_amount = fields.Float(
+        string="Loan Amount", 
+        required=True,
+        help="Total loan amount", 
+        tracking=True
+    )
+    total_amount = fields.Float(
+        string="Total Amount", 
+        store=True,
+        readonly=True, 
+        compute='_compute_total_amount',
+        help="The total amount of the loan"
+    )
+    balance_amount = fields.Float(
+        string="Balance Amount", 
+        store=True,
+        compute='_compute_total_amount',
+        help="Remaining balance to be paid",
+        tracking=True
+    )
+    total_paid_amount = fields.Float(
+        string="Total Paid Amount", 
+        store=True,
+        compute='_compute_total_amount',
+        help="Total amount paid (payslip + direct)",
+        tracking=True
+    )
+    payslip_paid_amount = fields.Float(
+        string="Paid via Payslip", 
+        store=True,
+        compute='_compute_total_amount',
+        help="Amount paid through payslip deductions"
+    )
+    direct_paid_amount = fields.Float(
+        string="Paid Directly", 
+        store=True,
+        compute='_compute_total_amount',
+        help="Amount paid directly (outside payslip)"
+    )
     state = fields.Selection([
         ('draft', 'Draft'),
         ('waiting_approval_1', 'Submitted'),
@@ -84,26 +144,26 @@ class HrLoan(models.Model):
     ], string="State", default='draft', help="Loan status", 
        copy=False, tracking=True)
     
-    # Accounting Fields
+    # Accounting Fields - FIXED DOMAINS
     loan_account_id = fields.Many2one(
         'account.account',
         string="Loan Account",
         required=True,
-        domain="[('account_type', '=', 'asset_current'), ('company_id', '=', company_id)]",
+        domain="[('account_type', '=', 'asset_current'), ('deprecated', '=', False)]",
         help="Employee Loan Receivable Account (Current Asset)"
     )
     treasury_account_id = fields.Many2one(
         'account.account',
         string="Disbursement Account",
         required=True,
-        domain="[('account_type', 'in', ['asset_cash', 'asset_current_receivable']), ('company_id', '=', company_id)]",
+        domain="[('account_type', 'in', ['asset_cash', 'asset_current_receivable']), ('deprecated', '=', False)]",
         help="Cash/Bank account used for loan disbursement"
     )
     journal_id = fields.Many2one(
         'account.journal',
         string="Journal",
         required=True,
-        domain="[('type', 'in', ['cash', 'bank']), ('company_id', '=', company_id)]",
+        domain="[('type', 'in', ['cash', 'bank'])]",
         help="Journal for loan transactions"
     )
     move_id = fields.Many2one(
@@ -198,7 +258,7 @@ class HrLoan(models.Model):
                         'account_id': loan.loan_account_id.id,
                         'debit': loan.loan_amount,
                         'credit': 0.0,
-                        'partner_id': loan.employee_id.address_home_id.id or False,
+                        'partner_id': loan.employee_id.address_home_id.id if loan.employee_id.address_home_id else False,
                     }),
                     # Credit: Cash/Bank (Money paid to employee)
                     (0, 0, {
@@ -206,7 +266,7 @@ class HrLoan(models.Model):
                         'account_id': loan.treasury_account_id.id,
                         'debit': 0.0,
                         'credit': loan.loan_amount,
-                        'partner_id': loan.employee_id.address_home_id.id or False,
+                        'partner_id': loan.employee_id.address_home_id.id if loan.employee_id.address_home_id else False,
                     }),
                 ]
             }
@@ -307,24 +367,58 @@ class HrLoanPayment(models.Model):
     _description = "Direct Loan Payment"
     _order = "payment_date desc"
 
-    name = fields.Char(string="Payment Reference", readonly=True, default="New")
-    loan_id = fields.Many2one('hr.loan', string="Loan", required=True, ondelete='cascade')
-    employee_id = fields.Many2one('hr.employee', string="Employee", required=True)
-    payment_date = fields.Date(string="Payment Date", required=True, default=fields.Date.today)
-    amount = fields.Float(string="Amount", required=True)
-    journal_id = fields.Many2one('account.journal', string="Payment Journal", required=True,
-                                 domain="[('type', 'in', ['cash', 'bank'])]")
-    payment_account_id = fields.Many2one('account.account', string="Payment Account", 
-                                        required=True,
-                                        domain="[('account_type', 'in', ['asset_cash', 'asset_current_receivable'])]")
+    name = fields.Char(
+        string="Payment Reference", 
+        readonly=True, 
+        default="New"
+    )
+    loan_id = fields.Many2one(
+        'hr.loan', 
+        string="Loan", 
+        required=True, 
+        ondelete='cascade'
+    )
+    employee_id = fields.Many2one(
+        'hr.employee', 
+        string="Employee", 
+        required=True
+    )
+    payment_date = fields.Date(
+        string="Payment Date", 
+        required=True, 
+        default=fields.Date.today
+    )
+    amount = fields.Float(
+        string="Amount", 
+        required=True
+    )
+    journal_id = fields.Many2one(
+        'account.journal', 
+        string="Payment Journal", 
+        required=True,
+        domain="[('type', 'in', ['cash', 'bank'])]"
+    )
+    payment_account_id = fields.Many2one(
+        'account.account', 
+        string="Payment Account", 
+        required=True,
+        domain="[('account_type', 'in', ['asset_cash', 'asset_current_receivable']), ('deprecated', '=', False)]"
+    )
     notes = fields.Text(string="Notes")
-    move_id = fields.Many2one('account.move', string="Journal Entry", readonly=True)
+    move_id = fields.Many2one(
+        'account.move', 
+        string="Journal Entry", 
+        readonly=True
+    )
     state = fields.Selection([
         ('draft', 'Draft'),
         ('posted', 'Posted'),
         ('cancel', 'Cancelled')
     ], string="Status", default='draft', readonly=True)
-    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
+    company_id = fields.Many2one(
+        'res.company', 
+        default=lambda self: self.env.company
+    )
 
     @api.model
     def create(self, vals):
@@ -352,7 +446,7 @@ class HrLoanPayment(models.Model):
                         'account_id': payment.payment_account_id.id,
                         'debit': payment.amount,
                         'credit': 0.0,
-                        'partner_id': loan.employee_id.address_home_id.id or False,
+                        'partner_id': loan.employee_id.address_home_id.id if loan.employee_id.address_home_id else False,
                     }),
                     # Credit: Loan Receivable (Reduce what employee owes)
                     (0, 0, {
@@ -360,7 +454,7 @@ class HrLoanPayment(models.Model):
                         'account_id': loan.loan_account_id.id,
                         'debit': 0.0,
                         'credit': payment.amount,
-                        'partner_id': loan.employee_id.address_home_id.id or False,
+                        'partner_id': loan.employee_id.address_home_id.id if loan.employee_id.address_home_id else False,
                     }),
                 ]
             }
@@ -397,6 +491,13 @@ class HrLoanPayment(models.Model):
             payment.write({'state': 'cancel'})
         return True
 
+    def unlink(self):
+        """ Prevent deletion of posted payments """
+        for payment in self:
+            if payment.state == 'posted':
+                raise UserError(_('Cannot delete a posted payment. Cancel it first.'))
+        return super(HrLoanPayment, self).unlink()
+
 
 class HrLoanPaymentWizard(models.TransientModel):
     """ Wizard to register direct loan payment """
@@ -405,13 +506,24 @@ class HrLoanPaymentWizard(models.TransientModel):
 
     loan_id = fields.Many2one('hr.loan', string="Loan", required=True)
     employee_id = fields.Many2one('hr.employee', string="Employee", required=True)
-    payment_date = fields.Date(string="Payment Date", required=True, default=fields.Date.today)
+    payment_date = fields.Date(
+        string="Payment Date", 
+        required=True, 
+        default=fields.Date.today
+    )
     amount = fields.Float(string="Amount", required=True)
-    journal_id = fields.Many2one('account.journal', string="Payment Journal", required=True,
-                                 domain="[('type', 'in', ['cash', 'bank'])]")
-    payment_account_id = fields.Many2one('account.account', string="Received In", 
-                                        required=True,
-                                        domain="[('account_type', 'in', ['asset_cash', 'asset_current_receivable'])]")
+    journal_id = fields.Many2one(
+        'account.journal', 
+        string="Payment Journal", 
+        required=True,
+        domain="[('type', 'in', ['cash', 'bank'])]"
+    )
+    payment_account_id = fields.Many2one(
+        'account.account', 
+        string="Received In", 
+        required=True,
+        domain="[('account_type', 'in', ['asset_cash', 'asset_current_receivable']), ('deprecated', '=', False)]"
+    )
     notes = fields.Text(string="Notes")
 
     def action_register_payment(self):
