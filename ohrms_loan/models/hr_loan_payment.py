@@ -9,7 +9,6 @@ class HrLoanPayment(models.Model):
 
     loan_id = fields.Many2one(
         'hr.loan',
-        string='Loan',
         required=True,
         ondelete='cascade'
     )
@@ -21,41 +20,23 @@ class HrLoanPayment(models.Model):
     )
 
     date = fields.Date(
-        string='Payment Date',
         default=fields.Date.context_today,
         required=True
     )
 
-    amount = fields.Float(
-        string='Paid Amount',
-        required=True
-    )
+    amount = fields.Float(required=True)
 
     payment_method = fields.Selection([
         ('payroll', 'Payroll'),
         ('cash', 'Cash'),
         ('bank', 'Bank'),
-    ], string='Payment Method', required=True)
+    ], required=True)
 
-    payslip_id = fields.Many2one(
-        'hr.payslip',
-        string='Payslip Reference'
-    )
-
-    move_id = fields.Many2one(
-        'account.move',
-        string='Journal Entry',
-        readonly=True
-    )
-
-    company_id = fields.Many2one(
-        related='loan_id.company_id',
-        store=True,
-        readonly=True
-    )
+    payslip_id = fields.Many2one('hr.payslip')
+    move_id = fields.Many2one('account.move')
 
     @api.constrains('amount')
     def _check_amount(self):
         for rec in self:
             if rec.amount <= 0:
-                raise ValidationError("Payment amount must be greater than zero.")
+                raise ValidationError("Payment amount must be positive.")
