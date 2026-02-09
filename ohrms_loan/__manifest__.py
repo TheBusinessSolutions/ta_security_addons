@@ -21,31 +21,31 @@
 #
 #############################################################################
 {
-    'name': 'Employee Loan Management with Accounting',
+    'name': 'Open HRMS Loan Management',
     'version': '17.0.1.0.0',
     'category': 'Human Resources',
-    'summary': 'Manage employee loans with full accounting integration',
-    'description': """
-        Employee Loan Management
-        ========================
-        * Create and approve employee loans
-        * Automatic installment calculation
-        * Payslip integration for deductions
-        * Direct payment registration
-        * Full accounting integration
-        * Loan receivable tracking in Chart of Accounts
-        * Support for multiple payment methods
-    """,
-    'author': 'Your Company',
+    'summary': 'Manage Employee Loan Requests',
+    'description': """This module facilitates the creation and management of employee loan requests. 
+    The loan amount is automatically deducted from the salary""",
+    'author': "Cybrosys Techno Solutions,Open HRMS",
+    'company': 'Cybrosys Techno Solutions',
+    'maintainer': 'Cybrosys Techno Solutions',
+    'live_test_url': 'https://youtu.be/lAT5cqVZTZI',
+    'website': "https://cybrosys.com, https://www.openhrms.com",
     'depends': ['hr', 'account', 'hr_payroll_community'],
-
     'data': [
+        'security/hr_loan_security.xml',
         'security/ir.model.access.csv',
-        'data/sequence.xml',
+        'data/ir_sequence_data.xml',
         'views/hr_loan_views.xml',
+        'views/hr_payslip_views.xml',
+        'views/hr_employee_views.xml',
     ],
-    'installable': True,
-    'application': True,
-    'auto_install': False,
+    'demo': ['data/hr_salary_rule_demo.xml',
+             'data/hr_rule_input_demo.xml', ],
+    'images': ['static/description/banner.jpg'],
     'license': 'LGPL-3',
+    'installable': True,
+    'auto_install': False,
+    'application': False,
 }
