@@ -37,29 +37,15 @@ class ShAccountJournalRestrict(models.Model):
         return super()._name_search(name, expression.AND([sh_domain,domain]), operator, limit, order)
 
     # To apply domain to load menu_________ 1
-    # @api.model
-    # def search_fetch(self, domain, field_names, offset=0, limit=None, order=None):
-    #     _ = self._context or {}
-    #     if (
-    #         self.env.user.has_group("sh_journal_restrict.group_journal_restrict_feature") and not
-    #         (self.env.user.has_group("base.group_erp_manager"))
-    #     ):
-    #         domain += [
-    #             ("user_ids", "in", self.env.user.id),
-    #         ]
-    #     return super(ShAccountJournalRestrict, self).search_fetch(
-    #         domain, field_names, offset, limit, order)
     @api.model
     def search_fetch(self, domain, field_names, offset=0, limit=None, order=None):
-        # We check if we are in a 'search' or 'list' view context
-        # This prevents breaking Odoo's background logic (like finding default journals)
+        _ = self._context or {}
         if (
-            self.env.user.has_group("sh_journal_restrict.group_journal_restrict_feature") and 
-            not self.env.user.has_group("base.group_erp_manager") and
-            not self._context.get('skip_journal_restriction') # Useful for manual bypass
+            self.env.user.has_group("sh_journal_restrict.group_journal_restrict_feature") and not
+            (self.env.user.has_group("base.group_erp_manager"))
         ):
-            # Only apply if it's a call from the UI/Actions
-            domain = expression.AND([domain, [("user_ids", "in", self.env.user.id)]])
-            
+            domain += [
+                ("user_ids", "in", self.env.user.id),
+            ]
         return super(ShAccountJournalRestrict, self).search_fetch(
             domain, field_names, offset, limit, order)
