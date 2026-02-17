@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ═══════════════════════════════════════════════════════════════════
+         REPORT TEMPLATE — Salary Advance Request
+    ═══════════════════════════════════════════════════════════════════ -->
+    <template id="report_hr_salary_advance_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="advance">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Header -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <h2>Salary Advance Request</h2>
+                                <h4 class="text-muted">
+                                    <t t-esc="advance.name"/>
+                                </h4>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span t-attf-class="badge #{
+                                    'bg-secondary' if advance.state == 'draft' else
+                                    'bg-info' if advance.state == 'submitted' else
+                                    'bg-warning' if advance.state == 'approved' else
+                                    'bg-success' if advance.state == 'disbursed' else
+                                    'bg-danger'
+                                } fs-5">
+                                    <t t-esc="dict(advance._fields['state'].selection).get(advance.state)"/>
+                                </span>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <!-- Employee & Advance Info -->
+                        <div class="row mb-4">
+                            <div class="col-6">
+                                <table class="table table-borderless table-sm">
+                                    <tr>
+                                        <td class="fw-bold" style="width:40%">Employee:</td>
+                                        <td><t t-esc="advance.employee_id.name"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Department:</td>
+                                        <td><t t-esc="advance.department_id.name or '-'"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Job Position:</td>
+                                        <td><t t-esc="advance.job_id.name or '-'"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-6">
+                                <table class="table table-borderless table-sm">
+                                    <tr>
+                                        <td class="fw-bold" style="width:40%">Request Date:</td>
+                                        <td><span t-field="advance.date"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Advance Amount:</td>
+                                        <td><span t-field="advance.amount"
+                                                  t-options='{"widget": "monetary", "display_currency": advance.currency_id}'/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Advance Account:</td>
+                                        <td><t t-esc="advance.advance_account_id.display_name or '-'"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Reason -->
+                        <div class="mb-4" t-if="advance.reason">
+                            <strong>Reason:</strong>
+                            <p class="mt-1"><t t-esc="advance.reason"/></p>
+                        </div>
+
+                        <!-- Balance Summary -->
+                        <div t-if="advance.state == 'disbursed'" class="mb-4">
+                            <h5>Repayment Summary</h5>
+                            <table class="table table-bordered table-sm" style="width:50%">
+                                <tr class="table-light">
+                                    <td class="fw-bold">Advance Amount</td>
+                                    <td class="text-end">
+                                        <span t-field="advance.amount"
+                                              t-options='{"widget": "monetary", "display_currency": advance.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">Total Repaid</td>
+                                    <td class="text-end">
+                                        <span t-field="advance.total_repaid"
+                                              t-options='{"widget": "monetary", "display_currency": advance.currency_id}'/>
+                                    </td>
+                                </tr>
+                                <tr class="table-warning">
+                                    <td class="fw-bold">Outstanding Balance</td>
+                                    <td class="text-end fw-bold">
+                                        <span t-field="advance.outstanding_balance"
+                                              t-options='{"widget": "monetary", "display_currency": advance.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Repayment History -->
+                        <div t-if="advance.ledger_line_ids">
+                            <h5>Repayment History</h5>
+                            <table class="table table-bordered table-sm">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Source</th>
+                                        <th class="text-end">Debit (DR)</th>
+                                        <th class="text-end">Credit (CR)</th>
+                                        <th class="text-end">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="advance.ledger_line_ids" t-as="line">
+                                        <tr>
+                                            <td><span t-field="line.date"/></td>
+                                            <td><t t-esc="line.description"/></td>
+                                            <td><t t-esc="dict(line._fields['source'].selection).get(line.source)"/></td>
+                                            <td class="text-end">
+                                                <t t-if="line.line_type == 'debit'">
+                                                    <span t-field="line.amount"
+                                                          t-options='{"widget": "monetary", "display_currency": line.currency_id}'/>
+                                                </t>
+                                                <t t-else="">—</t>
+                                            </td>
+                                            <td class="text-end">
+                                                <t t-if="line.line_type == 'credit'">
+                                                    <span t-field="line.amount"
+                                                          t-options='{"widget": "monetary", "display_currency": line.currency_id}'/>
+                                                </t>
+                                                <t t-else="">—</t>
+                                            </td>
+                                            <td class="text-end fw-bold">
+                                                <span t-field="line.running_balance"
+                                                      t-options='{"widget": "monetary", "display_currency": line.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Approval Signatures -->
+                        <div class="row mt-5">
+                            <div class="col-4 text-center">
+                                <div style="border-top: 1px solid #000; padding-top: 8px; margin-top: 40px;">
+                                    Employee Signature
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div style="border-top: 1px solid #000; padding-top: 8px; margin-top: 40px;">
+                                    HR Manager
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div style="border-top: 1px solid #000; padding-top: 8px; margin-top: 40px;">
+                                    <t t-if="advance.approved_by">
+                                        <t t-esc="advance.approved_by.name"/>
+                                        <br/>
+                                        <span class="text-muted small">Finance Manager</span>
+                                    </t>
+                                    <t t-else="">Finance Manager</t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         REPORT TEMPLATE — Employee Advance Statement (from Ledger)
+    ═══════════════════════════════════════════════════════════════════ -->
+    <template id="report_hr_advance_statement_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Employee Advance Statement</h2>
+                    <hr/>
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Date</th>
+                                <th>Employee</th>
+                                <th>Reference</th>
+                                <th>Description</th>
+                                <th>Source</th>
+                                <th class="text-end">DR</th>
+                                <th class="text-end">CR</th>
+                                <th class="text-end">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="line">
+                                <tr>
+                                    <td><span t-field="line.date"/></td>
+                                    <td><t t-esc="line.employee_id.name"/></td>
+                                    <td><t t-esc="line.advance_id.name or '-'"/></td>
+                                    <td><t t-esc="line.description"/></td>
+                                    <td><t t-esc="dict(line._fields['source'].selection).get(line.source)"/></td>
+                                    <td class="text-end">
+                                        <t t-if="line.line_type == 'debit'">
+                                            <span t-field="line.amount"
+                                                  t-options='{"widget": "monetary", "display_currency": line.currency_id}'/>
+                                        </t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                    <td class="text-end">
+                                        <t t-if="line.line_type == 'credit'">
+                                            <span t-field="line.amount"
+                                                  t-options='{"widget": "monetary", "display_currency": line.currency_id}'/>
+                                        </t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                    <td class="text-end fw-bold">
+                                        <span t-field="line.running_balance"
+                                              t-options='{"widget": "monetary", "display_currency": line.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

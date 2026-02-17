@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ═══════════════════════════════════════════════════════════════════
+         ADVANCE LEDGER — LIST VIEW (main statement view)
+    ═══════════════════════════════════════════════════════════════════ -->
+    <record id="view_hr_advance_ledger_list" model="ir.ui.view">
+        <field name="name">hr.advance.ledger.line.list</field>
+        <field name="model">hr.advance.ledger.line</field>
+        <field name="arch" type="xml">
+            <list string="Employee Advance Ledger"
+                  create="false"
+                  edit="false"
+                  decoration-success="line_type == 'credit'"
+                  decoration-info="line_type == 'debit'">
+                <field name="date"/>
+                <field name="employee_id"/>
+                <field name="advance_id" optional="show"/>
+                <field name="description"/>
+                <field name="source" widget="badge"
+                       decoration-info="source == 'advance'"
+                       decoration-success="source == 'payslip'"
+                       decoration-warning="source == 'cash'"/>
+                <field name="line_type" string="DR / CR" widget="badge"
+                       decoration-danger="line_type == 'debit'"
+                       decoration-success="line_type == 'credit'"/>
+                <field name="amount" sum="Total Amount"/>
+                <field name="running_balance" string="Balance"/>
+                <field name="move_id" optional="show" string="Journal Entry"/>
+                <field name="payslip_id" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         ADVANCE LEDGER — SEARCH VIEW
+    ═══════════════════════════════════════════════════════════════════ -->
+    <record id="view_hr_advance_ledger_search" model="ir.ui.view">
+        <field name="name">hr.advance.ledger.line.search</field>
+        <field name="model">hr.advance.ledger.line</field>
+        <field name="arch" type="xml">
+            <search string="Search Advance Ledger">
+                <field name="employee_id"/>
+                <field name="advance_id" string="Advance Reference"/>
+                <field name="description"/>
+                <separator/>
+                <filter name="filter_debit" string="Advances (DR)"
+                        domain="[('line_type', '=', 'debit')]"/>
+                <filter name="filter_credit" string="Repayments (CR)"
+                        domain="[('line_type', '=', 'credit')]"/>
+                <separator/>
+                <filter name="filter_payslip" string="Salary Deductions"
+                        domain="[('source', '=', 'payslip')]"/>
+                <filter name="filter_cash" string="Cash Repayments"
+                        domain="[('source', '=', 'cash')]"/>
+                <separator/>
+                <filter name="filter_this_month" string="This Month"
+                        domain="[('date', '&gt;=', (context_today() + relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                 ('date', '&lt;=', (context_today() + relativedelta(day=31)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_employee" string="Employee"
+                            context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_advance" string="Advance"
+                            context="{'group_by': 'advance_id'}"/>
+                    <filter name="group_source" string="Source"
+                            context="{'group_by': 'source'}"/>
+                    <filter name="group_month" string="Month"
+                            context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         ADVANCE LEDGER — PIVOT VIEW (for analysis)
+    ═══════════════════════════════════════════════════════════════════ -->
+    <record id="view_hr_advance_ledger_pivot" model="ir.ui.view">
+        <field name="name">hr.advance.ledger.line.pivot</field>
+        <field name="model">hr.advance.ledger.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Advance Ledger Analysis" disable_linking="True">
+                <field name="employee_id" type="row"/>
+                <field name="source" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         EMPLOYEE BALANCE SUMMARY — Aggregated view
+    ═══════════════════════════════════════════════════════════════════ -->
+    <!-- We create a dedicated view for the "balance per employee" summary -->
+    <!-- This uses the ledger with groupBy employee + sum of amount by type -->
+    <record id="view_hr_advance_ledger_graph" model="ir.ui.view">
+        <field name="name">hr.advance.ledger.line.graph</field>
+        <field name="model">hr.advance.ledger.line</field>
+        <field name="arch" type="xml">
+            <graph string="Advance Balance by Employee" type="bar">
+                <field name="employee_id" type="row"/>
+                <field name="amount" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         ACTION — FULL LEDGER
+    ═══════════════════════════════════════════════════════════════════ -->
+    <record id="action_hr_advance_ledger" model="ir.actions.act_window">
+        <field name="name">Advance Ledger</field>
+        <field name="res_model">hr.advance.ledger.line</field>
+        <field name="view_mode">list,pivot,graph</field>
+        <field name="search_view_id" ref="view_hr_advance_ledger_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No advance ledger entries yet
+            </p>
+            <p>
+                All advance disbursements, salary deductions, and cash repayments
+                appear here as a running DR/CR statement per employee.
+            </p>
+        </field>
+    </record>
+
+</odoo>
