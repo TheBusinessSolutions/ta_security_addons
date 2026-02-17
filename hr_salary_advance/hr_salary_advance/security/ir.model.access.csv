@@ -1,6 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_hr_salary_advance_user,hr.salary.advance user,model_hr_salary_advance,group_hr_salary_advance_user,1,1,1,0
-access_hr_salary_advance_manager,hr.salary.advance manager,model_hr_salary_advance,group_hr_salary_advance_manager,1,1,1,1
-access_hr_advance_ledger_line_user,hr.advance.ledger.line user,model_hr_advance_ledger_line,group_hr_salary_advance_user,1,0,0,0
-access_hr_advance_ledger_line_manager,hr.advance.ledger.line manager,model_hr_advance_ledger_line,group_hr_salary_advance_manager,1,1,1,1
-access_hr_advance_payment_wizard_user,hr.advance.payment.wizard user,model_hr_advance_payment_wizard,group_hr_salary_advance_user,1,1,1,1
