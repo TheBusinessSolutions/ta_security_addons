@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ═══════════════════════════════════════════════════════════════════
+         MENUS — Salary Advance
+         Placed under the Payroll app top menu
+    ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Top-level menu (under Payroll) -->
+    <menuitem id="menu_hr_salary_advance_root"
+              name="Salary Advances"
+              parent="hr_payroll.menu_main_payroll"
+              sequence="25"
+              groups="hr_salary_advance.group_hr_salary_advance_user"/>
+
+    <!-- Advance Requests -->
+    <menuitem id="menu_hr_salary_advance_requests"
+              name="Advance Requests"
+              parent="menu_hr_salary_advance_root"
+              action="action_hr_salary_advance"
+              sequence="10"
+              groups="hr_salary_advance.group_hr_salary_advance_user"/>
+
+    <!-- Pending Approvals (Finance Manager only) -->
+    <menuitem id="menu_hr_salary_advance_pending"
+              name="Pending Approval"
+              parent="menu_hr_salary_advance_root"
+              action="action_hr_salary_advance_pending"
+              sequence="20"
+              groups="hr_salary_advance.group_hr_salary_advance_manager"/>
+
+    <!-- Advance Ledger / Statement -->
+    <menuitem id="menu_hr_advance_ledger"
+              name="Advance Ledger"
+              parent="menu_hr_salary_advance_root"
+              action="action_hr_advance_ledger"
+              sequence="30"
+              groups="hr_salary_advance.group_hr_salary_advance_manager"/>
+
+</odoo>

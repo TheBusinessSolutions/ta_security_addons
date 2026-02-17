@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Security Category -->
+        <record id="module_hr_salary_advance" model="ir.module.category">
+            <field name="name">Salary Advance</field>
+            <field name="description">Manage employee salary advances</field>
+            <field name="sequence">100</field>
+        </record>
+
+        <!-- HR User: can create and view advances -->
+        <record id="group_hr_salary_advance_user" model="res.groups">
+            <field name="name">HR User</field>
+            <field name="category_id" ref="module_hr_salary_advance"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Finance Manager: full control (approve, disburse, register payments) -->
+        <!-- We reuse account.group_account_manager for Finance Manager checks in Python -->
+        <!-- But add a convenience group for menu visibility -->
+        <record id="group_hr_salary_advance_manager" model="res.groups">
+            <field name="name">Finance Manager</field>
+            <field name="category_id" ref="module_hr_salary_advance"/>
+            <field name="implied_ids" eval="[(4, ref('group_hr_salary_advance_user'))]"/>
+            <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+        </record>
+    </data>
+</odoo>
