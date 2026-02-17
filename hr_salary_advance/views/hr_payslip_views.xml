@@ -1,51 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- ═══════════════════════════════════════════════════════════════════
-         PAYSLIP FORM — Inherit to show advance info and outstanding balance
+         PAYSLIP FORM — Inherit to show advance info
+         Compatible with hr_payroll_community view IDs
     ═══════════════════════════════════════════════════════════════════ -->
     <record id="view_hr_payslip_advance_inherit" model="ir.ui.view">
         <field name="name">hr.payslip.form.advance.inherit</field>
         <field name="model">hr.payslip</field>
-        <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+        <field name="inherit_id" ref="hr_payroll_community.hr_payslip_view_form"/>
         <field name="arch" type="xml">
 
-            <!-- Add advance outstanding balance info below employee/period fields -->
+            <!-- Inject hidden currency field after employee_id -->
             <xpath expr="//field[@name='employee_id']" position="after">
-                <!-- Show outstanding balance banner if employee has advances -->
-                <field name="currency_id" invisible="1"/>
+                <field name="advance_currency_id" invisible="1"/>
                 <field name="advance_outstanding" invisible="1"/>
             </xpath>
 
-            <!-- Add a dedicated Advance tab in the payslip notebook -->
+            <!-- Add Advance tab inside the notebook -->
             <xpath expr="//notebook" position="inside">
                 <page string="Salary Advance" name="salary_advance">
-                    <div class="alert alert-info mb-3" invisible="advance_outstanding == 0">
-                        <strong>💰 Employee Total Outstanding Advance Balance: </strong>
+
+                    <!-- Outstanding Balance Info Box -->
+                    <div class="alert alert-warning mb-3"
+                         invisible="advance_outstanding == 0">
+                        <strong>&#9888; Employee Outstanding Advance Balance: </strong>
                         <field name="advance_outstanding"
                                widget="monetary"
-                               options="{'currency_field': 'currency_id'}"/>
+                               options="{'currency_field': 'advance_currency_id'}"/>
                         <br/>
-                        <span class="text-muted small">
-                            To deduct from this payslip, add a line in the
-                            <strong>Other Inputs</strong> tab with code <strong>SAR</strong>
-                            and enter the amount to deduct this month.
+                        <span class="text-muted" style="font-size:0.9em;">
+                            To deduct this month, go to the
+                            <strong>Input Lines</strong> tab and add a line:
+                            <br/>
+                            &#8226; <strong>Code: SAR</strong> |
+                            Name: Salary Advance Return |
+                            Amount: amount to deduct
                         </span>
                     </div>
 
-                    <div class="alert alert-success mb-3" invisible="advance_outstanding != 0">
-                        <strong>✅ No outstanding advance balance for this employee.</strong>
+                    <div class="alert alert-success mb-3"
+                         invisible="advance_outstanding != 0">
+                        <strong>&#10003; No outstanding advance balance for this employee.</strong>
                     </div>
 
-                    <!-- Advance deductions applied via this payslip -->
+                    <!-- Advance deductions linked to this payslip -->
                     <field name="advance_ledger_line_ids" readonly="1">
-                        <list string="Advance Deductions (This Payslip)" editable="false">
+                        <list string="Advance Deductions (This Payslip)"
+                              editable="false">
                             <field name="date"/>
-                            <field name="advance_id"/>
+                            <field name="advance_id" string="Advance Ref"/>
                             <field name="description"/>
                             <field name="amount" sum="Total Deducted"/>
-                            <field name="currency_id" column_invisible="True"/>
                         </list>
                     </field>
+
                 </page>
             </xpath>
 

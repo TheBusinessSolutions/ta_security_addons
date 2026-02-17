@@ -25,8 +25,8 @@
                        decoration-success="line_type == 'credit'"/>
                 <field name="amount" sum="Total Amount"/>
                 <field name="running_balance" string="Balance"/>
-                <field name="move_id" optional="show" string="Journal Entry"/>
-                <field name="payslip_id" optional="show"/>
+                <field name="move_id" optional="hide" string="Journal Entry"/>
+                <field name="payslip_id" optional="hide"/>
                 <field name="currency_id" column_invisible="True"/>
             </list>
         </field>

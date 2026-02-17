@@ -11,14 +11,19 @@
             <field name="company_id" eval="False"/>
         </record>
 
-        <!-- SAR Input Type for Payslip Other Inputs -->
-        <!-- This is the input type HR uses in the payslip to specify
-             the salary advance deduction amount for this period -->
-        <record id="hr_payslip_input_type_sar" model="hr.payslip.input.type">
-            <field name="name">Salary Advance Return</field>
-            <field name="code">SAR</field>
-            <field name="country_id" eval="False"/>
-        </record>
+        <!--
+            NOTE - SAR Payslip Input (hr_payroll_community):
+            hr_payroll_community has no input type model (that is Enterprise-only).
+            Inputs are plain hr.payslip.input lines added directly on the payslip.
+
+            To deduct a salary advance, HR adds a line in the payslip
+            "Input Lines" tab:
+                Name   : Salary Advance Return
+                Code   : SAR
+                Amount : amount to deduct this month
+
+            The SAR salary rule reads it via: inputs.SAR.amount
+        -->
 
     </data>
 </odoo>
