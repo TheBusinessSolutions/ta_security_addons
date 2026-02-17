@@ -17,7 +17,7 @@
         - Full GL integration with configurable accounts and journals
     """,
     'author': 'HR Consulting',
-    'depends': ['hr_payroll', 'account', 'mail'],
+    'depends': ['hr_payroll_community', 'account', 'mail'],
     'data': [
         'security/hr_salary_advance_security.xml',
         'security/ir.model.access.csv',
