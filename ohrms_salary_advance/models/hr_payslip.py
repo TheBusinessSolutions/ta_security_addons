@@ -78,7 +78,7 @@ class HrPayslip(models.Model):
         cannot be resolved.
         """
         sar_rule = self._get_sar_rule(employee)
-        if not sar_rule or not sar_rule.account_debit:
+        if not sar_rule or not sar_rule.account_debit_id:
             return 0.0
 
         partner = employee.work_contact_id
