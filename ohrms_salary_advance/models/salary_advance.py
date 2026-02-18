@@ -273,10 +273,10 @@ class SalaryAdvance(models.Model):
         """
         self.ensure_one()
 
-        if not self.employee_id.address_id:
+        if not self.employee_id.work_contact_id:
             raise UserError(
-                _('Please define a home address for employee "%s".\n'
-                  'Go to the employee form → Private Information tab.')
+                _('Employee "%s" has no work contact defined.\n'
+                  'Please set it under the Work Information tab on the employee form.')
                 % self.employee_id.name
             )
 
@@ -319,19 +319,22 @@ class SalaryAdvance(models.Model):
            changed between HR approval and accounting approval).
 
         Journal entry posted:
-            DR  Debit Account (Employee Advance Account)   advance amount  [partner = employee.address_id]
-            CR  Credit Account (Cash / Bank)               advance amount  [partner = employee.address_id]
+            DR  Debit Account (Employee Advance Account)   advance amount  [partner = employee.work_contact_id]
+            CR  Credit Account (Cash / Bank)               advance amount  [partner = employee.work_contact_id]
 
         Milestone 2 change:
-            partner_id = employee.address_id is now attached to BOTH move
+            partner_id = employee.work_contact_id is now attached to BOTH move
             lines. This makes every advance traceable per employee on the
             dedicated COA account (e.g. 1410 Employee Salary Advances).
             Because the account type is Current Asset (not Receivable/Payable),
             these lines do NOT appear in the Partner Ledger or Aged Receivables
             report — they stay internal to the advance account only.
 
-            The resulting account.move is stored in move_id so a smart button
-            can link directly to it from the advance form.
+            work_contact_id is used instead of address_id because in Odoo 17
+            address_id points to the employee's home address which often
+            defaults to the company partner — giving the wrong partner on the
+            move line. work_contact_id is the employee's own dedicated partner
+            record and always carries the correct employee name.
         """
         self.ensure_one()
 
@@ -348,16 +351,17 @@ class SalaryAdvance(models.Model):
         self._check_advance_ceiling()
 
         # ------------------------------------------------------------------
-        # Milestone 2: resolve partner_id from employee home address.
-        # address_id is already validated in approve_request() (first gate).
-        # We re-check here defensively in case the record skipped HR approval
-        # via direct DB state change (e.g. during migration / testing).
+        # Milestone 2 (corrected): use work_contact_id as the partner on
+        # both move lines. This is the employee's own partner record in
+        # Odoo 17 and always carries the correct employee name.
+        # address_id was the original field but it defaults to the company
+        # partner in most setups, producing "My Company" on the move line.
         # ------------------------------------------------------------------
-        partner_id = self.employee_id.address_id.id
+        partner_id = self.employee_id.work_contact_id.id
         if not partner_id:
             raise UserError(
-                _('Employee "%s" has no home address defined.\n'
-                  'Please set it under Private Information on the employee form.')
+                _('Employee "%s" has no work contact defined.\n'
+                  'Please set it under the Work Information tab on the employee form.')
                 % self.employee_id.name
             )
 
