@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- ═══════════════════════════════════════════════════════════════════
+         ADVANCE LEDGER — SUB-LIST VIEW (used inside advance form One2many)
+         Must be declared BEFORE the main list view so Odoo finds it.
+    ═══════════════════════════════════════════════════════════════════ -->
+    <record id="view_hr_advance_ledger_sublist" model="ir.ui.view">
+        <field name="name">hr.advance.ledger.line.sublist</field>
+        <field name="model">hr.advance.ledger.line</field>
+        <field name="arch" type="xml">
+            <list string="Repayment History"
+                  create="false"
+                  edit="false"
+                  delete="false"
+                  decoration-success="line_type == 'credit'"
+                  decoration-info="line_type == 'debit'">
+                <field name="date"/>
+                <field name="description"/>
+                <field name="source" widget="badge"
+                       decoration-info="source == 'advance'"
+                       decoration-success="source == 'payslip'"
+                       decoration-warning="source == 'cash'"/>
+                <field name="line_type" string="Type" widget="badge"
+                       decoration-danger="line_type == 'debit'"
+                       decoration-success="line_type == 'credit'"/>
+                <field name="amount" sum="Total"/>
+                <field name="running_balance" string="Balance"/>
+                <field name="move_id" optional="hide" string="Journal Entry"/>
+                <field name="payslip_id" optional="hide"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
          ADVANCE LEDGER — LIST VIEW (main statement view)
     ═══════════════════════════════════════════════════════════════════ -->
     <record id="view_hr_advance_ledger_list" model="ir.ui.view">

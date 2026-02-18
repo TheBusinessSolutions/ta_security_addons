@@ -151,17 +151,9 @@
                     <!-- Ledger Lines Tab -->
                     <notebook invisible="state != 'disbursed'">
                         <page string="Repayment History" name="ledger_lines">
-                            <field name="ledger_line_ids" readonly="1">
-                                <list string="Repayment Lines" decoration-success="line_type == 'credit'" decoration-info="line_type == 'debit'">
-                                    <field name="date"/>
-                                    <field name="description"/>
-                                    <field name="source"/>
-                                    <field name="line_type" string="Type"/>
-                                    <field name="amount" sum="Total"/>
-                                    <field name="move_id" optional="show"/>
-                                    <field name="payslip_id" optional="show"/>
-                                </list>
-                            </field>
+                            <field name="ledger_line_ids"
+                                   readonly="1"
+                                   views="[(ref('hr_salary_advance.view_hr_advance_ledger_sublist'), 'list')]"/>
                         </page>
                     </notebook>
                 </sheet>

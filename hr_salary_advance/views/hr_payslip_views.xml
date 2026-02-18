@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- ═══════════════════════════════════════════════════════════════════
+         LEDGER LINE SUB-VIEW for use inside hr.payslip (payslip tab)
+    ═══════════════════════════════════════════════════════════════════ -->
+    <record id="view_hr_advance_ledger_payslip_sublist" model="ir.ui.view">
+        <field name="name">hr.advance.ledger.line.payslip.sublist</field>
+        <field name="model">hr.advance.ledger.line</field>
+        <field name="arch" type="xml">
+            <list string="Advance Deductions (This Payslip)"
+                  create="false"
+                  edit="false"
+                  delete="false">
+                <field name="date"/>
+                <field name="advance_id" string="Advance Ref"/>
+                <field name="description"/>
+                <field name="amount" sum="Total Deducted"/>
+                <field name="currency_id" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
          PAYSLIP FORM — Inherit to show advance info
          Compatible with hr_payroll_community view IDs
     ═══════════════════════════════════════════════════════════════════ -->
@@ -44,15 +64,9 @@
                     </div>
 
                     <!-- Advance deductions linked to this payslip -->
-                    <field name="advance_ledger_line_ids" readonly="1">
-                        <list string="Advance Deductions (This Payslip)"
-                              editable="false">
-                            <field name="date"/>
-                            <field name="advance_id" string="Advance Ref"/>
-                            <field name="description"/>
-                            <field name="amount" sum="Total Deducted"/>
-                        </list>
-                    </field>
+                    <field name="advance_ledger_line_ids"
+                           readonly="1"
+                           views="[(ref('hr_salary_advance.view_hr_advance_ledger_payslip_sublist'), 'list')]"/>
 
                 </page>
             </xpath>
