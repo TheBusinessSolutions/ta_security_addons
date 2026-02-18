@@ -88,7 +88,7 @@
                                    readonly="state not in ('draft', 'refused')"/>
                             <field name="amount"
                                    readonly="state not in ('draft', 'refused')"/>
-                            <field name="currency_id" invisible="1"/>
+                            <field name="currency_id" column_invisible="1"/>
                         </group>
                     </group>
 
@@ -194,7 +194,7 @@
                        decoration-warning="state == 'approved'"
                        decoration-info="state == 'submitted'"
                        decoration-danger="state == 'refused'"/>
-                <field name="currency_id" column_invisible="True"/>
+                <field name="currency_id" />
             </list>
         </field>
     </record>
