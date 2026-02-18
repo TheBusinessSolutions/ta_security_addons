@@ -196,7 +196,7 @@ class SalaryAdvance(models.Model):
             return self.env['account.account']
         # Take first match in case of duplicates; account_debit is the
         # standard field name on hr.salary.rule in hr_payroll_community.
-        return sar_rule[0].account_debit
+        return sar_rule[0].account_debit_id
 
     # -------------------------------------------------------------------------
     # Onchange
