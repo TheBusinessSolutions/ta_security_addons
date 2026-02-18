@@ -101,6 +101,17 @@ class SalaryAdvance(models.Model):
         help='Active contract of the employee (auto-filled).')
 
     # ------------------------------------------------------------------
+    # Milestone 2 — Journal entry reference.
+    # Stored when accounting approves so we can:
+    #   • display a smart button linking directly to the move, and
+    #   • use the move line for reconciliation in future milestones.
+    # ------------------------------------------------------------------
+    move_id = fields.Many2one(
+        'account.move', string='Journal Entry',
+        readonly=True, copy=False,
+        help='Journal entry created when accounting approved this advance.')
+
+    # ------------------------------------------------------------------
     # Computed: total outstanding approved advances for this employee.
     # Used in the form view as an informational field so both HR and
     # Accounting can see the current exposure before approving.
@@ -227,6 +238,24 @@ class SalaryAdvance(models.Model):
                 }
             )
 
+    # -------------------------------------------------------------------------
+    # Smart button action — Milestone 2
+    # -------------------------------------------------------------------------
+    def action_open_journal_entry(self):
+        """Open the journal entry linked to this advance.
+        Available to accounting users once the advance is approved."""
+        self.ensure_one()
+        if not self.move_id:
+            raise UserError(_('No journal entry found for this advance.'))
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Journal Entry'),
+            'res_model': 'account.move',
+            'res_id': self.move_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
     def approve_request(self):
         """HR Manager first-level approval.
 
@@ -290,12 +319,19 @@ class SalaryAdvance(models.Model):
            changed between HR approval and accounting approval).
 
         Journal entry posted:
-            DR  Debit Account (Employee Advance Account)   advance amount
-            CR  Credit Account (Cash / Bank)               advance amount
+            DR  Debit Account (Employee Advance Account)   advance amount  [partner = employee.address_id]
+            CR  Credit Account (Cash / Bank)               advance amount  [partner = employee.address_id]
 
-        partner_id is NOT yet attached to move lines in Milestone 1.
-        It will be added in Milestone 2 when we wire up the employee
-        sub-ledger properly.
+        Milestone 2 change:
+            partner_id = employee.address_id is now attached to BOTH move
+            lines. This makes every advance traceable per employee on the
+            dedicated COA account (e.g. 1410 Employee Salary Advances).
+            Because the account type is Current Asset (not Receivable/Payable),
+            these lines do NOT appear in the Partner Ledger or Aged Receivables
+            report — they stay internal to the advance account only.
+
+            The resulting account.move is stored in move_id so a smart button
+            can link directly to it from the advance form.
         """
         self.ensure_one()
 
@@ -311,30 +347,59 @@ class SalaryAdvance(models.Model):
         # Second ceiling check — accounting approval is the financial gate.
         self._check_advance_ceiling()
 
+        # ------------------------------------------------------------------
+        # Milestone 2: resolve partner_id from employee home address.
+        # address_id is already validated in approve_request() (first gate).
+        # We re-check here defensively in case the record skipped HR approval
+        # via direct DB state change (e.g. during migration / testing).
+        # ------------------------------------------------------------------
+        partner_id = self.employee_id.address_id.id
+        if not partner_id:
+            raise UserError(
+                _('Employee "%s" has no home address defined.\n'
+                  'Please set it under Private Information on the employee form.')
+                % self.employee_id.name
+            )
+
         today = time.strftime('%Y-%m-%d')
         line_ids = [
-            # Debit line — Employee Advance Account
+            # ------------------------------------------------------------------
+            # Debit line — Employee Advance Account (e.g. 1410)
+            # DR this account to record the asset: money owed by the employee.
+            # partner_id links the line to the employee so every advance is
+            # individually traceable on this account per employee.
+            # ------------------------------------------------------------------
             (0, 0, {
-                'name': _('Salary Advance - %s') % self.employee_id.name,
+                'name': _('Salary Advance - %s - %s') % (
+                    self.employee_id.name, self.name),
                 'account_id': self.debit.id,
                 'journal_id': self.journal.id,
                 'date': today,
+                'partner_id': partner_id,
                 'debit': self.advance if self.advance > 0.0 else 0.0,
                 'credit': -self.advance if self.advance < 0.0 else 0.0,
             }),
+            # ------------------------------------------------------------------
             # Credit line — Cash / Bank
+            # CR the payment account. partner_id attached here too so both
+            # sides of the entry are consistent and the payment is visible
+            # under the employee partner's transactions if needed.
+            # ------------------------------------------------------------------
             (0, 0, {
-                'name': _('Salary Advance - %s') % self.employee_id.name,
+                'name': _('Salary Advance - %s - %s') % (
+                    self.employee_id.name, self.name),
                 'account_id': self.credit.id,
                 'journal_id': self.journal.id,
                 'date': today,
+                'partner_id': partner_id,
                 'debit': -self.advance if self.advance < 0.0 else 0.0,
                 'credit': self.advance if self.advance > 0.0 else 0.0,
             }),
         ]
 
         move_vals = {
-            'narration': _('Salary Advance of %s') % self.employee_id.name,
+            'narration': _('Salary Advance of %s [%s]') % (
+                self.employee_id.name, self.name),
             'ref': self.name,
             'journal_id': self.journal.id,
             'date': today,
@@ -344,5 +409,10 @@ class SalaryAdvance(models.Model):
         move = self.env['account.move'].create(move_vals)
         move.action_post()
 
-        self.state = 'approve'
+        # Store the move reference so the smart button and future
+        # reconciliation (Milestone 4) can reach it directly.
+        self.write({
+            'state': 'approve',
+            'move_id': move.id,
+        })
         return True
