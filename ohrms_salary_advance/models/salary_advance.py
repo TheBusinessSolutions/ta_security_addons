@@ -20,202 +20,329 @@
 #    If not, see <http://www.gnu.org/licenses/>.
 #
 #############################################################################
-from datetime import datetime
 import time
-from odoo import exceptions
 from odoo.exceptions import UserError
 from odoo import api, fields, models, _
 
 
 class SalaryAdvance(models.Model):
-    """Class for the model salary_advance. Contains methods and fields of the
-       model."""
+    """Salary Advance model — supports multiple concurrent open advances per
+    employee. The total outstanding approved advances are guarded against a
+    maximum ceiling defined as max_percent of the employee contract wage."""
+
     _name = "salary.advance"
     _description = "Salary Advance"
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
-    name = fields.Char(string='Name', readonly=True,
-                       default=lambda self: 'Adv/',
-                       help='Name of the the advanced salary.')
-    employee_id = fields.Many2one('hr.employee', string='Employee',
-                                  required=True, help="Name of the Employee")
-    date = fields.Date(string='Date', required=True,
-                       default=lambda self: fields.Date.today(),
-                       help="Submit date of the advanced salary.")
-    reason = fields.Text(string='Reason', help="Reason for the advance salary"
-                                               " request.")
-    currency_id = fields.Many2one('res.currency', string='Currency',
-                                  required=True,
-                                  help='Currency of the company.',
-                                  default=lambda self: self.env.user.
-                                  company_id.currency_id)
-    company_id = fields.Many2one('res.company', string='Company',
-                                 required=True,
-                                 help='Company of the employee,',
-                                 default=lambda self: self.env.user.company_id)
-    advance = fields.Float(string='Advance', required=True,
-                           help='The requested money.')
-    payment_method = fields.Many2one('account.journal',
-                                     string='Payment Method',
-                                     help='Pyment method of the salary'
-                                          ' advance.')
-    exceed_condition = fields.Boolean(string='Exceed than Maximum',
-                                      help="The Advance is greater than the "
-                                           "maximum percentage in salary "
-                                           "structure")
-    department = fields.Many2one('hr.department', string='Department',
-                                 related='employee_id.department_id',
-                                 help='Department of the employee.')
-    state = fields.Selection([('draft', 'Draft'),
-                              ('submit', 'Submitted'),
-                              ('waiting_approval', 'Waiting Approval'),
-                              ('approve', 'Approved'),
-                              ('cancel', 'Cancelled'),
-                              ('reject', 'Rejected')], string='Status',
-                             default='draft', track_visibility='onchange',
-                             help='State of the salary advance.')
-    debit = fields.Many2one('account.account', string='Debit Account',
-                            help='Debit account of the salary advance.')
-    credit = fields.Many2one('account.account', string='Credit Account',
-                             help='Credit account of the salary advance.')
-    journal = fields.Many2one('account.journal', string='Journal',
-                              help='Journal of the salary advance.')
-    employee_contract_id = fields.Many2one('hr.contract', string='Contract',
-                                           related='employee_id.contract_id',
-                                           help='Running contract of the '
-                                                'employee.')
+    # -------------------------------------------------------------------------
+    # Fields
+    # -------------------------------------------------------------------------
+    name = fields.Char(
+        string='Name', readonly=True,
+        default=lambda self: 'Adv/',
+        help='Sequence reference of the salary advance.')
+    employee_id = fields.Many2one(
+        'hr.employee', string='Employee', required=True,
+        help='Employee requesting the advance.')
+    date = fields.Date(
+        string='Date', required=True,
+        default=lambda self: fields.Date.today(),
+        help='Date of the advance request.')
+    reason = fields.Text(
+        string='Reason',
+        help='Reason provided by the employee for requesting the advance.')
+    currency_id = fields.Many2one(
+        'res.currency', string='Currency', required=True,
+        default=lambda self: self.env.user.company_id.currency_id,
+        help='Currency used for this advance.')
+    company_id = fields.Many2one(
+        'res.company', string='Company', required=True,
+        default=lambda self: self.env.user.company_id,
+        help='Company of the employee.')
+    advance = fields.Float(
+        string='Advance Amount', required=True,
+        help='Amount being requested as a salary advance.')
+    payment_method = fields.Many2one(
+        'account.journal', string='Payment Method',
+        help='Payment journal used to disburse the advance.')
+    exceed_condition = fields.Boolean(
+        string='Exceed Maximum',
+        help='Check this to allow the advance to exceed the maximum percentage '
+             'configured on the salary structure. Requires HR Manager approval.')
+    department = fields.Many2one(
+        'hr.department', string='Department',
+        related='employee_id.department_id',
+        help='Department of the employee (auto-filled).')
+    state = fields.Selection(
+        selection=[
+            ('draft', 'Draft'),
+            ('submit', 'Submitted'),
+            ('waiting_approval', 'Waiting Approval'),
+            ('approve', 'Approved'),
+            ('cancel', 'Cancelled'),
+            ('reject', 'Rejected'),
+        ],
+        string='Status', default='draft',
+        tracking=True,
+        help='Current state of the salary advance request.')
+    debit = fields.Many2one(
+        'account.account', string='Debit Account',
+        help='Account debited when the advance is disbursed (e.g. Employee '
+             'Advance Account).')
+    credit = fields.Many2one(
+        'account.account', string='Credit Account',
+        help='Account credited when the advance is disbursed (e.g. Cash/Bank).')
+    journal = fields.Many2one(
+        'account.journal', string='Journal',
+        help='Accounting journal used to post the advance entry.')
+    employee_contract_id = fields.Many2one(
+        'hr.contract', string='Contract',
+        related='employee_id.contract_id',
+        help='Active contract of the employee (auto-filled).')
 
+    # ------------------------------------------------------------------
+    # Computed: total outstanding approved advances for this employee.
+    # Used in the form view as an informational field so both HR and
+    # Accounting can see the current exposure before approving.
+    # ------------------------------------------------------------------
+    total_outstanding_advance = fields.Float(
+        string='Total Outstanding Advances',
+        compute='_compute_total_outstanding_advance',
+        help='Sum of all approved (not yet fully deducted) advances for this '
+             'employee. Used to check against the maximum ceiling.')
+
+    # -------------------------------------------------------------------------
+    # Computed methods
+    # -------------------------------------------------------------------------
+    @api.depends('employee_id', 'state')
+    def _compute_total_outstanding_advance(self):
+        """Compute the total of all *other* approved advances for the same
+        employee so that the form shows real-time exposure."""
+        for rec in self:
+            if not rec.employee_id:
+                rec.total_outstanding_advance = 0.0
+                continue
+            approved = self.search([
+                ('employee_id', '=', rec.employee_id.id),
+                ('state', '=', 'approve'),
+                ('id', '!=', rec._origin.id),
+            ])
+            rec.total_outstanding_advance = sum(approved.mapped('advance'))
+
+    # -------------------------------------------------------------------------
+    # Onchange
+    # -------------------------------------------------------------------------
     @api.onchange('company_id')
     def _onchange_company_id(self):
-        """This method will trigger when there is a change in company_id."""
+        """Restrict journal domain to the selected company."""
         company = self.company_id
-        domain = [('company_id.id', '=', company.id)]
-        result = {
+        return {
             'domain': {
-                'journal': domain,
-            },
+                'journal': [('company_id', '=', company.id)],
+            }
         }
-        return result
 
+    # -------------------------------------------------------------------------
+    # Button actions — state transitions
+    # -------------------------------------------------------------------------
     def action_submit_to_manager(self):
-        """Method of a button. Changing the state of the salary advance."""
+        """Employee submits the request to their HR manager."""
         self.state = 'submit'
 
     def action_cancel(self):
-        """Method of a button. Changing the state of the salary advance."""
+        """Cancel a draft or submitted advance."""
         self.state = 'cancel'
 
     def action_reject(self):
-        """Method of a button. Changing the state of the salary advance."""
+        """HR manager rejects the advance during waiting-approval stage."""
         self.state = 'reject'
 
+    # -------------------------------------------------------------------------
+    # ORM overrides
+    # -------------------------------------------------------------------------
     @api.model
     def create(self, vals):
-        """Supering the create method to generate sequence for the salary
-         advance."""
-        vals['name'] = self.env['ir.sequence'].get('salary.advance.seq') or ' '
-        res_id = super(SalaryAdvance, self).create(vals)
-        return res_id
+        """Assign a sequence number on creation."""
+        vals['name'] = (
+            self.env['ir.sequence'].get('salary.advance.seq') or '/'
+        )
+        return super().create(vals)
+
+    # -------------------------------------------------------------------------
+    # Approval helpers
+    # -------------------------------------------------------------------------
+    def _check_advance_ceiling(self):
+        """Validate that adding this advance does not exceed the maximum
+        outstanding balance allowed by the salary structure.
+
+        Ceiling = (max_percent / 100) * contract wage
+
+        If max_percent is 0 on the structure the check is skipped (no limit
+        configured). The `exceed_condition` flag on the record lets an HR
+        manager explicitly bypass the ceiling — useful for exceptional cases.
+        """
+        self.ensure_one()
+        if self.exceed_condition:
+            # Manager has explicitly allowed exceeding the limit.
+            return
+
+        contract = self.employee_contract_id
+        if not contract:
+            return  # Contract check is handled separately.
+
+        max_percent = contract.struct_id.max_percent if contract.struct_id else 0
+        if not max_percent:
+            return  # No ceiling configured — allow freely.
+
+        max_allowed = (max_percent / 100.0) * contract.wage
+
+        # Current outstanding advances (already approved, excluding this one)
+        existing_approved = self.search([
+            ('employee_id', '=', self.employee_id.id),
+            ('state', '=', 'approve'),
+            ('id', '!=', self.id),
+        ])
+        outstanding = sum(existing_approved.mapped('advance'))
+
+        if outstanding + self.advance > max_allowed:
+            raise UserError(
+                _(
+                    'Cannot approve this advance.\n\n'
+                    'Employee: %(name)s\n'
+                    'Requested: %(req).2f\n'
+                    'Current outstanding advances: %(out).2f\n'
+                    'Maximum allowed (%(pct)s%% of %(wage).2f wage): %(max).2f\n\n'
+                    'Total would be %(total).2f which exceeds the ceiling of '
+                    '%(max).2f.\n\n'
+                    'To override, tick the "Exceed Maximum" checkbox before '
+                    'resubmitting.'
+                ) % {
+                    'name': self.employee_id.name,
+                    'req': self.advance,
+                    'out': outstanding,
+                    'pct': max_percent,
+                    'wage': contract.wage,
+                    'max': max_allowed,
+                    'total': outstanding + self.advance,
+                }
+            )
 
     def approve_request(self):
-        """This Approves the employee salary advance request."""
-        if not self.employee_id.address_id.id:
-            raise UserError('Define home address for the employee. i.e address'
-                            ' under private information of the employee.')
-        salary_advance_search = self.search(
-            [('employee_id', '=', self.employee_id.id), ('id', '!=', self.id),
-             ('state', '=', 'approve')])
-        current_month = datetime.strptime(str(self.date),
-                                          '%Y-%m-%d').date().month
-        for each_advance in salary_advance_search:
-            existing_month = datetime.strptime(str(each_advance.date),
-                                               '%Y-%m-%d').date().month
-            if current_month == existing_month:
-                raise UserError('Advance can be requested once in a month')
-        if not self.employee_contract_id:
-            raise UserError('Define a contract for the employee')
-        if (self.advance > self.employee_contract_id.wage
-                and not self.exceed_condition):
-            raise UserError('Advance amount is greater than allotted')
+        """HR Manager first-level approval.
 
-        if not self.advance:
-            raise UserError('You must Enter the Salary Advance amount')
-        payslip_ids = self.env['hr.payslip'].search(
-            [('employee_id', '=', self.employee_id.id),
-             ('state', '=', 'done'), ('date_from', '<=', self.date),
-             ('date_to', '>=', self.date)])
-        if payslip_ids:
-            raise UserError("This month salary already calculated")
-        for slip in self.env['hr.payslip'].search(
-                [('employee_id', '=', self.employee_id.id)]):
-            slip_moth = datetime.strptime(str(slip.date_from),
-                                          '%Y-%m-%d').date().month
-            if current_month == slip_moth + 1:
-                slip_day = datetime.strptime(str(slip.date_from),
-                                             '%Y-%m-%d').date().day
-                current_day = datetime.strptime(str(self.date),
-                                                '%Y-%m-%d').date().day
-                if (current_day - slip_day < self.
-                        employee_contract_id.struct_id.advance_date):
-                    raise exceptions.UserError(
-                        _('Request can be done after "%s" Days From prevoius'
-                          ' month salary') % self.
-                        employee_contract_id.struct_id.advance_date)
+        Checks performed:
+        1. Employee must have a home address.
+        2. Employee must have an active contract.
+        3. Advance amount must be > 0.
+        4. This month's payslip must not already be confirmed.
+        5. Aggregate outstanding balance must not exceed the ceiling
+           (unless exceed_condition is ticked).
+
+        Removed from original:
+        - One-advance-per-month restriction (replaced by ceiling check above).
+        - advance_date day restriction (removed per client requirement).
+        """
+        self.ensure_one()
+
+        if not self.employee_id.address_id:
+            raise UserError(
+                _('Please define a home address for employee "%s".\n'
+                  'Go to the employee form → Private Information tab.')
+                % self.employee_id.name
+            )
+
+        if not self.employee_contract_id:
+            raise UserError(
+                _('No active contract found for employee "%s". '
+                  'Please define a contract before approving an advance.')
+                % self.employee_id.name
+            )
+
+        if not self.advance or self.advance <= 0:
+            raise UserError(_('Please enter a valid advance amount greater than zero.'))
+
+        # Block if this month's payslip is already confirmed.
+        payslip_done = self.env['hr.payslip'].search([
+            ('employee_id', '=', self.employee_id.id),
+            ('state', '=', 'done'),
+            ('date_from', '<=', self.date),
+            ('date_to', '>=', self.date),
+        ], limit=1)
+        if payslip_done:
+            raise UserError(
+                _('The payslip for this period is already confirmed for '
+                  'employee "%s". No new advance can be created for a '
+                  'closed period.') % self.employee_id.name
+            )
+
+        # Aggregate ceiling check.
+        self._check_advance_ceiling()
+
         self.state = 'waiting_approval'
 
     def approve_request_acc_dept(self):
-        """This Approves the employee salary advance request from accounting
-         department."""
-        salary_advance_search = self.search(
-            [('employee_id', '=', self.employee_id.id), ('id', '!=', self.id),
-             ('state', '=', 'approve')])
-        current_month = datetime.strptime(str(self.date),
-                                          '%Y-%m-%d').date().month
-        for each_advance in salary_advance_search:
-            existing_month = datetime.strptime(str(each_advance.date),
-                                               '%Y-%m-%d').date().month
-            if current_month == existing_month:
-                raise UserError('Advance can be requested once in a month')
+        """Accounting department final approval — posts the journal entry.
+
+        Checks performed:
+        1. Advance amount must be > 0.
+        2. Debit account, Credit account, and Journal must be filled.
+        3. Aggregate ceiling check (second gate — in case contract/structure
+           changed between HR approval and accounting approval).
+
+        Journal entry posted:
+            DR  Debit Account (Employee Advance Account)   advance amount
+            CR  Credit Account (Cash / Bank)               advance amount
+
+        partner_id is NOT yet attached to move lines in Milestone 1.
+        It will be added in Milestone 2 when we wire up the employee
+        sub-ledger properly.
+        """
+        self.ensure_one()
+
+        if not self.advance or self.advance <= 0:
+            raise UserError(_('Please enter a valid advance amount greater than zero.'))
+
         if not self.debit or not self.credit or not self.journal:
-            raise UserError("You must enter Debit & Credit account and"
-                            " journal to approve ")
-        if not self.advance:
-            raise UserError('You must Enter the Salary Advance amount')
-        line_ids = []
-        debit_sum = 0.0
-        credit_sum = 0.0
-        for request in self:
-            move = {
-                'narration': 'Salary Advance Of ' + request.employee_id.name,
-                'ref': request.name,
-                'journal_id': request.journal.id,
-                'date': time.strftime('%Y-%m-%d'),
-            }
-            if request.debit.id:
-                debit_line = (0, 0, {
-                    'name': request.employee_id.name,
-                    'account_id': request.debit.id,
-                    'journal_id': request.journal.id,
-                    'date': time.strftime('%Y-%m-%d'),
-                    'debit': request.advance > 0.0 and request.advance or 0.0,
-                    'credit': request.advance < 0.0 and -request.advance or 0.0,
-                })
-                line_ids.append(debit_line)
-                debit_sum += debit_line[2]['debit'] - debit_line[2]['credit']
-            if request.credit.id:
-                credit_line = (0, 0, {
-                    'name': request.employee_id.name,
-                    'account_id': request.credit.id,
-                    'journal_id': request.journal.id,
-                    'date': time.strftime('%Y-%m-%d'),
-                    'debit': request.advance < 0.0 and -request.advance or 0.0,
-                    'credit': request.advance > 0.0 and request.advance or 0.0,
-                })
-                line_ids.append(credit_line)
-                credit_sum += credit_line[2]['credit'] - credit_line[2][
-                    'debit']
-            move.update({'line_ids': line_ids})
-            draft = self.env['account.move'].create(move)
-            draft.action_post()
-            self.state = 'approve'
-            return True
+            raise UserError(
+                _('Please fill in the Debit Account, Credit Account, and '
+                  'Journal before approving.')
+            )
+
+        # Second ceiling check — accounting approval is the financial gate.
+        self._check_advance_ceiling()
+
+        today = time.strftime('%Y-%m-%d')
+        line_ids = [
+            # Debit line — Employee Advance Account
+            (0, 0, {
+                'name': _('Salary Advance - %s') % self.employee_id.name,
+                'account_id': self.debit.id,
+                'journal_id': self.journal.id,
+                'date': today,
+                'debit': self.advance if self.advance > 0.0 else 0.0,
+                'credit': -self.advance if self.advance < 0.0 else 0.0,
+            }),
+            # Credit line — Cash / Bank
+            (0, 0, {
+                'name': _('Salary Advance - %s') % self.employee_id.name,
+                'account_id': self.credit.id,
+                'journal_id': self.journal.id,
+                'date': today,
+                'debit': -self.advance if self.advance < 0.0 else 0.0,
+                'credit': self.advance if self.advance > 0.0 else 0.0,
+            }),
+        ]
+
+        move_vals = {
+            'narration': _('Salary Advance of %s') % self.employee_id.name,
+            'ref': self.name,
+            'journal_id': self.journal.id,
+            'date': today,
+            'line_ids': line_ids,
+        }
+
+        move = self.env['account.move'].create(move_vals)
+        move.action_post()
+
+        self.state = 'approve'
+        return True
