@@ -194,7 +194,7 @@
                        decoration-warning="state == 'approved'"
                        decoration-info="state == 'submitted'"
                        decoration-danger="state == 'refused'"/>
-                <field name="currency_id" />
+                <field name="currency_id" column_invisible="True"/>
             </list>
         </field>
     </record>
