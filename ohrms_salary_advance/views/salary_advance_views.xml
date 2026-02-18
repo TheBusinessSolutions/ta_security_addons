@@ -153,6 +153,14 @@
                                    invisible="state in ('draft','submit')"
                                    readonly="state in ('approve','cancel','reject')"
                                    groups="account.group_account_manager"/>
+
+                            <!-- Milestone 3 — settlement status -->
+                            <field name="is_paid"
+                                   readonly="1"
+                                   invisible="state != 'approve'"/>
+                            <field name="payslip_id"
+                                   readonly="1"
+                                   invisible="not payslip_id"/>
                         </group>
                     </group>
                 </sheet>
@@ -184,6 +192,7 @@
                 <field name="date"/>
                 <field name="advance" sum="Total"/>
                 <field name="currency_id" groups="base.group_multi_currency"/>
+                <field name="is_paid"/>
                 <field name="state"
                        widget="badge"
                        decoration-success="state == 'approve'"

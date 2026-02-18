@@ -112,6 +112,24 @@ class SalaryAdvance(models.Model):
         help='Journal entry created when accounting approved this advance.')
 
     # ------------------------------------------------------------------
+    # Milestone 3 — Payslip settlement tracking.
+    # When a confirmed payslip deducts this advance via the SAR salary
+    # rule, is_paid flips to True and payslip_id records which payslip
+    # settled it. This is what get_inputs() filters on — only advances
+    # where is_paid=False are included in the accumulated deduction total.
+    # ------------------------------------------------------------------
+    is_paid = fields.Boolean(
+        string='Paid via Payslip', default=False,
+        readonly=True, copy=False,
+        tracking=True,
+        help='Set to True automatically when a confirmed payslip deducts '
+             'this advance through the SAR salary rule.')
+    payslip_id = fields.Many2one(
+        'hr.payslip', string='Settled by Payslip',
+        readonly=True, copy=False,
+        help='The payslip that settled this advance.')
+
+    # ------------------------------------------------------------------
     # Computed: total outstanding approved advances for this employee.
     # Used in the form view as an informational field so both HR and
     # Accounting can see the current exposure before approving.
@@ -136,6 +154,7 @@ class SalaryAdvance(models.Model):
             approved = self.search([
                 ('employee_id', '=', rec.employee_id.id),
                 ('state', '=', 'approve'),
+                ('is_paid', '=', False),
                 ('id', '!=', rec._origin.id),
             ])
             rec.total_outstanding_advance = sum(approved.mapped('advance'))
@@ -207,10 +226,11 @@ class SalaryAdvance(models.Model):
 
         max_allowed = (max_percent / 100.0) * contract.wage
 
-        # Current outstanding advances (already approved, excluding this one)
+        # Current outstanding advances (approved and not yet paid via payslip)
         existing_approved = self.search([
             ('employee_id', '=', self.employee_id.id),
             ('state', '=', 'approve'),
+            ('is_paid', '=', False),
             ('id', '!=', self.id),
         ])
         outstanding = sum(existing_approved.mapped('advance'))
