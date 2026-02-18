@@ -112,24 +112,6 @@ class SalaryAdvance(models.Model):
         help='Journal entry created when accounting approved this advance.')
 
     # ------------------------------------------------------------------
-    # Milestone 3 — Payslip settlement tracking.
-    # When a confirmed payslip deducts this advance via the SAR salary
-    # rule, is_paid flips to True and payslip_id records which payslip
-    # settled it. This is what get_inputs() filters on — only advances
-    # where is_paid=False are included in the accumulated deduction total.
-    # ------------------------------------------------------------------
-    is_paid = fields.Boolean(
-        string='Paid via Payslip', default=False,
-        readonly=True, copy=False,
-        tracking=True,
-        help='Set to True automatically when a confirmed payslip deducts '
-             'this advance through the SAR salary rule.')
-    payslip_id = fields.Many2one(
-        'hr.payslip', string='Settled by Payslip',
-        readonly=True, copy=False,
-        help='The payslip that settled this advance.')
-
-    # ------------------------------------------------------------------
     # Computed: total outstanding approved advances for this employee.
     # Used in the form view as an informational field so both HR and
     # Accounting can see the current exposure before approving.
@@ -145,23 +127,91 @@ class SalaryAdvance(models.Model):
     # -------------------------------------------------------------------------
     @api.depends('employee_id', 'state')
     def _compute_total_outstanding_advance(self):
-        """Compute the total of all *other* approved advances for the same
-        employee so that the form shows real-time exposure."""
+        """Compute the live GL balance on the SAR advance account for this
+        employee — SUM(debit) - SUM(credit) on posted move lines where
+        account = SAR debit account AND partner = employee.work_contact_id.
+
+        This is the real outstanding balance the employee owes, regardless
+        of how many advances exist or how many partial payments were made.
+        It is shown on the advance form as an informational figure."""
         for rec in self:
-            if not rec.employee_id:
-                rec.total_outstanding_advance = 0.0
-                continue
-            approved = self.search([
-                ('employee_id', '=', rec.employee_id.id),
-                ('state', '=', 'approve'),
-                ('is_paid', '=', False),
-                ('id', '!=', rec._origin.id),
-            ])
-            rec.total_outstanding_advance = sum(approved.mapped('advance'))
+            rec.total_outstanding_advance = rec._get_gl_balance()
+
+    def _get_gl_balance(self):
+        """Return the live GL balance (DR - CR) on the SAR advance account
+        for this employee. Used by both the computed field and the ceiling
+        check so there is a single query point.
+
+        Returns 0.0 if the employee, their contract, or the SAR account
+        cannot be resolved.
+        """
+        self.ensure_one()
+        if not self.employee_id:
+            return 0.0
+        partner = self.employee_id.work_contact_id
+        if not partner:
+            return 0.0
+        sar_account = self._get_sar_account()
+        if not sar_account:
+            return 0.0
+        # Query posted move lines on the advance account for this employee.
+        domain = [
+            ('account_id', '=', sar_account.id),
+            ('partner_id', '=', partner.id),
+            ('parent_state', '=', 'posted'),
+            ('company_id', '=', self.company_id.id),
+        ]
+        data = self.env['account.move.line'].read_group(
+            domain=domain,
+            fields=['debit:sum', 'credit:sum'],
+            groupby=[],
+        )
+        if not data:
+            return 0.0
+        return (data[0].get('debit') or 0.0) - (data[0].get('credit') or 0.0)
+
+    # -------------------------------------------------------------------------
+    # Helpers
+    # -------------------------------------------------------------------------
+    def _get_sar_account(self):
+        """Return the debit account defined on the SAR salary rule for this
+        employee's contract salary structure.
+
+        This is the single source of truth for the advance account used
+        across the entire module:
+          • Auto-filled on the advance form when the employee is selected.
+          • Used by hr_payslip.get_inputs() to query the GL balance.
+          • Used by _check_advance_ceiling() to compute outstanding balance.
+
+        Returns an account.account record or an empty recordset if not found.
+        """
+        self.ensure_one()
+        contract = self.employee_contract_id
+        if not contract or not contract.struct_id:
+            return self.env['account.account']
+        sar_rule = contract.struct_id.rule_ids.filtered(
+            lambda r: r.code == 'SAR'
+        )
+        if not sar_rule:
+            return self.env['account.account']
+        # Take first match in case of duplicates; account_debit is the
+        # standard field name on hr.salary.rule in hr_payroll_community.
+        return sar_rule[0].account_debit
 
     # -------------------------------------------------------------------------
     # Onchange
     # -------------------------------------------------------------------------
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        """Auto-fill the debit account from the SAR salary rule when the
+        employee is selected or changed. Kept editable so the accountant
+        can override it if needed."""
+        if not self.employee_id:
+            return
+        sar_account = self._get_sar_account()
+        if sar_account:
+            self.debit = sar_account
+
     @api.onchange('company_id')
     def _onchange_company_id(self):
         """Restrict journal domain to the selected company."""
@@ -202,23 +252,27 @@ class SalaryAdvance(models.Model):
     # Approval helpers
     # -------------------------------------------------------------------------
     def _check_advance_ceiling(self):
-        """Validate that adding this advance does not exceed the maximum
-        outstanding balance allowed by the salary structure.
+        """Validate that adding this advance does not push the employee's
+        total outstanding balance above the ceiling defined on the salary
+        structure.
 
         Ceiling = (max_percent / 100) * contract wage
 
-        If max_percent is 0 on the structure the check is skipped (no limit
-        configured). The `exceed_condition` flag on the record lets an HR
-        manager explicitly bypass the ceiling — useful for exceptional cases.
+        Outstanding balance is read from the live GL (DR - CR on the SAR
+        advance account for this employee) so it automatically reflects
+        any partial payments already made — whether through a payslip or
+        a direct cash payment — without any flags to maintain.
+
+        The `exceed_condition` flag lets an HR manager explicitly bypass
+        the ceiling for exceptional cases.
         """
         self.ensure_one()
         if self.exceed_condition:
-            # Manager has explicitly allowed exceeding the limit.
             return
 
         contract = self.employee_contract_id
         if not contract:
-            return  # Contract check is handled separately.
+            return
 
         max_percent = contract.struct_id.max_percent if contract.struct_id else 0
         if not max_percent:
@@ -226,22 +280,16 @@ class SalaryAdvance(models.Model):
 
         max_allowed = (max_percent / 100.0) * contract.wage
 
-        # Current outstanding advances (approved and not yet paid via payslip)
-        existing_approved = self.search([
-            ('employee_id', '=', self.employee_id.id),
-            ('state', '=', 'approve'),
-            ('is_paid', '=', False),
-            ('id', '!=', self.id),
-        ])
-        outstanding = sum(existing_approved.mapped('advance'))
+        # Live GL balance = what the employee currently owes.
+        current_gl_balance = self._get_gl_balance()
 
-        if outstanding + self.advance > max_allowed:
+        if current_gl_balance + self.advance > max_allowed:
             raise UserError(
                 _(
                     'Cannot approve this advance.\n\n'
                     'Employee: %(name)s\n'
                     'Requested: %(req).2f\n'
-                    'Current outstanding advances: %(out).2f\n'
+                    'Current GL balance (outstanding): %(out).2f\n'
                     'Maximum allowed (%(pct)s%% of %(wage).2f wage): %(max).2f\n\n'
                     'Total would be %(total).2f which exceeds the ceiling of '
                     '%(max).2f.\n\n'
@@ -250,11 +298,11 @@ class SalaryAdvance(models.Model):
                 ) % {
                     'name': self.employee_id.name,
                     'req': self.advance,
-                    'out': outstanding,
+                    'out': current_gl_balance,
                     'pct': max_percent,
                     'wage': contract.wage,
                     'max': max_allowed,
-                    'total': outstanding + self.advance,
+                    'total': current_gl_balance + self.advance,
                 }
             )
 
@@ -309,20 +357,6 @@ class SalaryAdvance(models.Model):
 
         if not self.advance or self.advance <= 0:
             raise UserError(_('Please enter a valid advance amount greater than zero.'))
-
-        # Block if this month's payslip is already confirmed.
-        payslip_done = self.env['hr.payslip'].search([
-            ('employee_id', '=', self.employee_id.id),
-            ('state', '=', 'done'),
-            ('date_from', '<=', self.date),
-            ('date_to', '>=', self.date),
-        ], limit=1)
-        if payslip_done:
-            raise UserError(
-                _('The payslip for this period is already confirmed for '
-                  'employee "%s". No new advance can be created for a '
-                  'closed period.') % self.employee_id.name
-            )
 
         # Aggregate ceiling check.
         self._check_advance_ceiling()

@@ -85,22 +85,22 @@
                     </div>
 
                     <!--
-                        Outstanding balance banner — visible once the employee
-                        is selected. Gives HR and Accounting immediate context
-                        on how much this employee already has outstanding before
-                        they approve the current request.
+                        GL balance banner — shown once the employee is selected
+                        and there is an outstanding balance on the advance
+                        account. This reads the live GL so it always reflects
+                        partial payments and prior payslip deductions.
                     -->
                     <div class="alert alert-warning"
                          role="alert"
-                         invisible="not employee_id or total_outstanding_advance == 0">
-                        <strong>Note:</strong>
-                        This employee has
+                         invisible="not employee_id or total_outstanding_advance &lt;= 0">
+                        <strong>Outstanding Advance Balance (GL):</strong>
+                        This employee currently has
                         <field name="total_outstanding_advance"
                                widget="monetary"
                                options="{'currency_field': 'currency_id'}"
                                readonly="1"
                                nolabel="1"/>
-                        in other outstanding approved advances.
+                        outstanding on the advance account.
                     </div>
 
                     <group>
@@ -153,14 +153,6 @@
                                    invisible="state in ('draft','submit')"
                                    readonly="state in ('approve','cancel','reject')"
                                    groups="account.group_account_manager"/>
-
-                            <!-- Milestone 3 — settlement status -->
-                            <field name="is_paid"
-                                   readonly="1"
-                                   invisible="state != 'approve'"/>
-                            <field name="payslip_id"
-                                   readonly="1"
-                                   invisible="not payslip_id"/>
                         </group>
                     </group>
                 </sheet>
@@ -192,7 +184,6 @@
                 <field name="date"/>
                 <field name="advance" sum="Total"/>
                 <field name="currency_id" groups="base.group_multi_currency"/>
-                <field name="is_paid"/>
                 <field name="state"
                        widget="badge"
                        decoration-success="state == 'approve'"

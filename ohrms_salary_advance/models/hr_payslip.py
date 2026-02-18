@@ -21,47 +21,108 @@
 #
 #############################################################################
 from odoo import models, _
+from odoo.exceptions import UserError
 
 
 class HrPayslip(models.Model):
-    """Extends hr.payslip with two Milestone 3 behaviours:
+    """Extends hr.payslip with Milestone 3 (GL-driven) behaviours.
 
-    1. get_inputs(): injects the TOTAL of all outstanding unpaid approved
-       advances into the SAR input line so the accountant sees the correct
-       accumulated figure in Other Inputs when preparing the payslip.
+    get_inputs():
+        Reads the live GL balance on the SAR salary rule debit account for
+        the employee (DR - CR on posted move lines filtered by partner =
+        employee.work_contact_id). This is the real outstanding balance
+        the employee owes at the moment the payslip is computed — it
+        automatically reflects every advance ever granted and every
+        partial or full payment made, whether through a prior payslip
+        or a direct cash payment reconciled outside the payslip.
 
-    2. action_payslip_done(): after calling super (which posts the payslip
-       accounting move), we:
-         a. Stamp work_contact_id as partner_id on every line of the payslip
-            journal entry that belongs to the employee's advance account,
-            so the move line is traceable per employee — consistent with
-            how the original advance entry was posted in Milestone 2.
-         b. Mark all unpaid approved advances for this employee as is_paid=True
-            and link them to this payslip, closing them out.
+        The accountant sees this figure in the Other Inputs / SAR line
+        and can manually reduce it if they want to make a partial
+        deduction this month. Whatever they enter is what gets deducted.
+
+    action_payslip_done():
+        After super() posts the payslip journal entry, we stamp
+        work_contact_id as partner_id on all payslip move lines that
+        have no partner yet — consistent with how advance entries are
+        posted in Milestone 2.
     """
     _inherit = 'hr.payslip'
 
     # -------------------------------------------------------------------------
-    # get_inputs — inject accumulated outstanding advance total into SAR line
+    # Helpers
+    # -------------------------------------------------------------------------
+    def _get_sar_rule(self, employee):
+        """Return the SAR salary rule for the employee's contract structure,
+        or an empty recordset if not found."""
+        contract = employee.contract_id
+        if not contract or not contract.struct_id:
+            return self.env['hr.salary.rule']
+        return contract.struct_id.rule_ids.filtered(
+            lambda r: r.code == 'SAR'
+        )[:1]
+
+    def _get_advance_gl_balance(self, employee):
+        """Return the live GL balance (DR - CR) on the SAR advance account
+        for the given employee.
+
+        Query:
+            account  = SAR salary rule debit account (account_debit)
+            partner  = employee.work_contact_id
+            state    = posted
+
+        This is the single authoritative figure for how much the employee
+        owes at any point in time. It is not derived from advance records —
+        it comes directly from the accounting ledger.
+
+        Returns 0.0 if the SAR rule, its account, or the employee partner
+        cannot be resolved.
+        """
+        sar_rule = self._get_sar_rule(employee)
+        if not sar_rule or not sar_rule.account_debit:
+            return 0.0
+
+        partner = employee.work_contact_id
+        if not partner:
+            return 0.0
+
+        domain = [
+            ('account_id', '=', sar_rule.account_debit.id),
+            ('partner_id', '=', partner.id),
+            ('parent_state', '=', 'posted'),
+            ('company_id', '=', employee.company_id.id),
+        ]
+        data = self.env['account.move.line'].read_group(
+            domain=domain,
+            fields=['debit:sum', 'credit:sum'],
+            groupby=[],
+        )
+        if not data:
+            return 0.0
+        return (data[0].get('debit') or 0.0) - (data[0].get('credit') or 0.0)
+
+    # -------------------------------------------------------------------------
+    # get_inputs — inject live GL balance into SAR line
     # -------------------------------------------------------------------------
     def get_inputs(self, contract_ids, date_from, date_to):
-        """Override to populate the SAR (Salary Advance Recovery) input line
-        with the SUM of ALL outstanding unpaid approved advances for the
-        employee — regardless of when each advance was requested.
+        """Override to populate the SAR input line with the live GL balance
+        on the employee's advance account.
 
-        Original behaviour: only advances whose date fell in the same calendar
-        month as date_from were considered, and only one advance could exist
-        at a time anyway.
+        This replaces the original approach of summing advance records filtered
+        by month. The GL balance is always accurate because:
 
-        Milestone 3 behaviour:
-          • Filter: state='approve' AND is_paid=False
-          • No date restriction — all open advances are included
-          • The total is the number the accountant will see (and can adjust)
-            in the Other Inputs section of the payslip form
+          • Every approved advance adds a DR to the advance account.
+          • Every payslip deduction adds a CR via the SAR salary rule.
+          • Every direct cash payment by the employee adds a CR when
+            reconciled against the advance account.
+
+        The accountant sees the correct total in Other Inputs automatically.
+        They can reduce it for a partial deduction — whatever they leave in
+        the SAR line is what gets deducted from the payslip this month.
+        The remaining balance will appear again on the next payslip.
         """
         res = super().get_inputs(contract_ids, date_from, date_to)
 
-        # Resolve employee from contract list or from the payslip itself.
+        # Resolve employee.
         employee = (
             self.env['hr.contract'].browse(contract_ids[0].id).employee_id
             if contract_ids
@@ -70,99 +131,54 @@ class HrPayslip(models.Model):
         if not employee:
             return res
 
-        # All approved, not-yet-paid advances for this employee.
-        unpaid_advances = self.env['salary.advance'].search([
-            ('employee_id', '=', employee.id),
-            ('state', '=', 'approve'),
-            ('is_paid', '=', False),
-        ])
-
-        if not unpaid_advances:
+        gl_balance = self._get_advance_gl_balance(employee)
+        if not gl_balance or gl_balance <= 0:
             return res
 
-        total_outstanding = sum(unpaid_advances.mapped('advance'))
-
-        # Inject into the SAR input line.
-        # SAR is the salary rule input code defined in hr_salary_rule_data.xml.
-        # get_inputs() has already built the res list with a 0-amount SAR line;
-        # we simply set its amount to the accumulated total.
+        # Inject into the SAR line that super() already added at amount 0.
         for result in res:
-            if result.get('code') == 'SAR' and total_outstanding > 0:
-                result['amount'] = total_outstanding
+            if result.get('code') == 'SAR':
+                result['amount'] = gl_balance
                 break
 
         return res
 
     # -------------------------------------------------------------------------
-    # action_payslip_done — mark advances paid + fix partner on payslip move
+    # action_payslip_done — attach employee partner to payslip move lines
     # -------------------------------------------------------------------------
     def action_payslip_done(self):
-        """Override to run post-confirmation logic after the payslip is confirmed.
+        """Override to stamp work_contact_id on the payslip journal entry.
 
-        Step 1 — call super() to let Odoo confirm the payslip and post the
-                  accounting journal entry (the payslip move).
+        After super() confirms the payslip and posts the accounting move,
+        we write partner_id = employee.work_contact_id on all move lines
+        that have no partner yet. This ensures the employee is visible as
+        the partner on all payslip accounting lines — consistent with
+        Milestone 2 where the same partner was used on the advance entry.
 
-        Step 2 — attach work_contact_id as partner_id on every move line in
-                  the payslip journal entry. This ensures the employee is
-                  visible as the partner on ALL payslip accounting lines,
-                  consistent with the advance journal entry posted in
-                  Milestone 2.
+        Lines that already carry a partner (e.g. tax authority lines) are
+        left untouched.
 
-        Step 3 — find all outstanding unpaid advances for this employee,
-                  mark is_paid=True and link payslip_id to this payslip.
-                  This closes them out so they will not be picked up by
-                  get_inputs() in any future payslip.
-
-        Note on the SAR amount: the accountant enters (or adjusts) the SAR
-        amount manually in Other Inputs before confirming. We trust whatever
-        amount was entered — we do not re-validate it here. The ceiling check
-        already ran at approval time.
+        No advance record flags are touched here. The GL balance on the
+        advance account automatically decreases by the SAR CR posted by
+        the salary rule, which is all that is needed.
         """
-        # Step 1 — standard Odoo payslip confirmation + move posting.
         result = super().action_payslip_done()
 
         for payslip in self:
-            employee = payslip.employee_id
-            partner = employee.work_contact_id
+            partner = payslip.employee_id.work_contact_id
+            if not payslip.move_id or not partner:
+                continue
 
-            # ------------------------------------------------------------------
-            # Step 2 — attach employee partner to all payslip move lines.
-            #
-            # The payslip move is payslip.move_id (set by super()).
-            # We write partner_id on lines that don't already have a partner
-            # (some lines like tax lines may already carry a different partner).
-            # We only touch lines that are unset so we don't override bank/
-            # tax partners inadvertently.
-            # ------------------------------------------------------------------
-            if payslip.move_id and partner:
-                lines_without_partner = payslip.move_id.line_ids.filtered(
-                    lambda l: not l.partner_id
-                )
-                if lines_without_partner:
-                    # move is already posted — we need to temporarily reset
-                    # it to draft to allow line edits, then re-post.
-                    payslip.move_id.button_draft()
-                    lines_without_partner.write({'partner_id': partner.id})
-                    payslip.move_id.action_post()
+            lines_without_partner = payslip.move_id.line_ids.filtered(
+                lambda l: not l.partner_id
+            )
+            if not lines_without_partner:
+                continue
 
-            # ------------------------------------------------------------------
-            # Step 3 — close out all outstanding unpaid advances.
-            #
-            # We mark every approved unpaid advance for this employee as paid
-            # and link it to this payslip. The SAR amount the accountant entered
-            # may not perfectly equal the sum of individual advances (they could
-            # have adjusted it), but we close ALL outstanding advances because
-            # the payslip is the settlement event for the full balance.
-            # ------------------------------------------------------------------
-            unpaid_advances = self.env['salary.advance'].search([
-                ('employee_id', '=', employee.id),
-                ('state', '=', 'approve'),
-                ('is_paid', '=', False),
-            ])
-            if unpaid_advances:
-                unpaid_advances.write({
-                    'is_paid': True,
-                    'payslip_id': payslip.id,
-                })
+            # Reset to draft, write partner, re-post.
+            # This is the standard Odoo pattern for editing a posted move.
+            payslip.move_id.button_draft()
+            lines_without_partner.write({'partner_id': partner.id})
+            payslip.move_id.action_post()
 
         return result
