@@ -86,7 +86,7 @@ class HrPayslip(models.Model):
             return 0.0
 
         domain = [
-            ('account_id', '=', sar_rule.account_debit.id),
+            ('account_id', '=', sar_rule.account_debit_id.id),
             ('partner_id', '=', partner.id),
             ('parent_state', '=', 'posted'),
             ('company_id', '=', employee.company_id.id),
