@@ -15,7 +15,7 @@
                 <field name="advance_id" string="Advance Ref"/>
                 <field name="description"/>
                 <field name="amount" sum="Total Deducted"/>
-                <field name="currency_id" column_invisible="True"/>
+                <field name="currency_id" column_invisible="1"/>
             </list>
         </field>
     </record>

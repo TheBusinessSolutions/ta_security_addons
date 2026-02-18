@@ -88,7 +88,7 @@
                                    readonly="state not in ('draft', 'refused')"/>
                             <field name="amount"
                                    readonly="state not in ('draft', 'refused')"/>
-                            <field name="currency_id" column_invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
                         </group>
                     </group>
 
@@ -189,12 +189,8 @@
                 <field name="outstanding_balance" optional="show"/>
                 <field name="advance_account_id" optional="hide"/>
                 <field name="journal_id" optional="hide"/>
-                <field name="state" widget="badge"
-                       decoration-success="state == 'disbursed'"
-                       decoration-warning="state == 'approved'"
-                       decoration-info="state == 'submitted'"
-                       decoration-danger="state == 'refused'"/>
-                <field name="currency_id" column_invisible="True"/>
+                <field name="state" widget="badge"/>
+                <field name="currency_id" column_invisible="1"/>
             </list>
         </field>
     </record>

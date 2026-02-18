@@ -27,7 +27,7 @@
                 <field name="running_balance" string="Balance"/>
                 <field name="move_id" optional="hide" string="Journal Entry"/>
                 <field name="payslip_id" optional="hide"/>
-                <field name="currency_id" column_invisible="True"/>
+                <field name="currency_id" column_invisible="1"/>
             </list>
         </field>
     </record>
@@ -59,7 +59,7 @@
                 <field name="running_balance" string="Balance"/>
                 <field name="move_id" optional="hide" string="Journal Entry"/>
                 <field name="payslip_id" optional="hide"/>
-                <field name="currency_id" column_invisible="True"/>
+                <field name="currency_id" column_invisible="1"/>
             </list>
         </field>
     </record>
