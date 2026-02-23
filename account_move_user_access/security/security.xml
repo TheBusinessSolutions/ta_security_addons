@@ -11,7 +11,7 @@
 
     <record id="group_account_all_documents" model="res.groups">
         <field name="name">Accounting: All Documents</field>
-        <field name="implied_ids" eval="[(4, ref('account_security_structure.group_account_own_documents'))]"/>
+        <field name="implied_ids" eval="[(4, ref('account_move_user_access.group_account_own_documents'))]"/>
     </record>
 
 
