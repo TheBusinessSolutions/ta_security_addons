@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_account_move_own,account.move.own,account.model_account_move,account_security_structure.group_account_own_documents,1,1,1,0
+access_account_move_all,account.move.all,account.model_account_move,account_security_structure.group_account_all_documents,1,1,1,1
+access_account_payment_own,account.payment.own,account.model_account_payment,account_security_structure.group_account_own_documents,1,1,1,0
+access_account_payment_all,account.payment.all,account.model_account_payment,account_security_structure.group_account_all_documents,1,1,1,1
