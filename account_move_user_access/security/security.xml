@@ -1,10 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- =============================== -->
-    <!-- GROUPS -->
-    <!-- =============================== -->
-
+    <!-- Groups -->
     <record id="group_account_own_documents" model="res.groups">
         <field name="name">Accounting: Own Documents</field>
     </record>
@@ -14,54 +9,28 @@
         <field name="implied_ids" eval="[(4, ref('account_move_user_access.group_account_own_documents'))]"/>
     </record>
 
-
-    <!-- =============================== -->
-    <!-- RECORD RULES - account.move -->
-    <!-- =============================== -->
-
-    <!-- Own Documents Rule -->
+    <!-- Rules: Account Moves (Invoices/Bills) -->
     <record id="account_move_rule_own_documents" model="ir.rule">
         <field name="name">Account Move: Own Documents Only</field>
         <field name="model_id" ref="account.model_account_move"/>
         <field name="domain_force">
             [
                 '|',
-                ('invoice_user_id', '=', user.id),
-                ('create_uid', '=', user.id)
+                ('invoice_user_id', '=', user.id),  # Sales invoices
+                ('create_uid', '=', user.id)        # Purchase invoices, payments, journals
             ]
         </field>
         <field name="groups" eval="[(4, ref('account_move_user_access.group_account_own_documents'))]"/>
     </record>
 
-    <!-- All Documents Rule -->
-    <record id="account_move_rule_all_documents" model="ir.rule">
-        <field name="name">Account Move: All Documents</field>
-        <field name="model_id" ref="account.model_account_move"/>
-        <field name="domain_force">[(1,'=',1)]</field>
-        <field name="groups" eval="[(4, ref('account_move_user_access.group_account_all_documents'))]"/>
-    </record>
-
-
-    <!-- =============================== -->
-    <!-- RECORD RULES - account.payment -->
-    <!-- =============================== -->
-
-    <!-- Own Payments -->
+    <!-- Rules: Payments (account.payment) -->
     <record id="account_payment_rule_own_documents" model="ir.rule">
-        <field name="name">Account Payment: Own Documents Only</field>
+        <field name="name">Payments: Own Documents Only</field>
         <field name="model_id" ref="account.model_account_payment"/>
-        <field name="domain_force">
-            [('create_uid', '=', user.id)]
-        </field>
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('account_move_user_access.group_account_own_documents'))]"/>
     </record>
 
-    <!-- All Payments -->
-    <record id="account_payment_rule_all_documents" model="ir.rule">
-        <field name="name">Account Payment: All Documents</field>
-        <field name="model_id" ref="account.model_account_payment"/>
-        <field name="domain_force">[(1,'=',1)]</field>
-        <field name="groups" eval="[(4, ref('account_move_user_access.group_account_all_documents'))]"/>
-    </record>
-
+    <!-- Rules: Journal Entries (account.move, journal items already covered by account_move_rule_own_documents) -->
+    <!-- Optionally, you can create separate rules for journal items if needed -->
 </odoo>
