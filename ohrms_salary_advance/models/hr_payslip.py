@@ -144,23 +144,28 @@ class HrPayslip(models.Model):
         return res
 
     # -------------------------------------------------------------------------
-    # action_payslip_done — attach employee partner to payslip move lines
+    # action_payslip_done — stamp partner only on the SAR move line
     # -------------------------------------------------------------------------
     def action_payslip_done(self):
-        """Override to stamp work_contact_id on the payslip journal entry.
+        """Override to stamp work_contact_id as partner_id exclusively on
+        the SAR salary rule move line in the payslip journal entry.
 
-        After super() confirms the payslip and posts the accounting move,
-        we write partner_id = employee.work_contact_id on all move lines
-        that have no partner yet. This ensures the employee is visible as
-        the partner on all payslip accounting lines — consistent with
-        Milestone 2 where the same partner was used on the advance entry.
+        Why only SAR:
+            All other salary rule lines (Basic, Deductions, NET, etc.) post
+            to general expense/liability/bank accounts that belong to the
+            company — not to any specific employee. Stamping the employee
+            partner on those lines would pollute the partner ledger and
+            reports with payroll entries that don't belong there.
 
-        Lines that already carry a partner (e.g. tax authority lines) are
-        left untouched.
+            The SAR line posts to the Employee Advance account (1111111)
+            which IS per-employee by design — the partner is required there
+            so the GL balance query in get_inputs() and the employee ledger
+            in Milestone 4 can filter correctly by employee.
 
-        No advance record flags are touched here. The GL balance on the
-        advance account automatically decreases by the SAR CR posted by
-        the salary rule, which is all that is needed.
+        How we identify the SAR line:
+            We match by account_id = SAR rule's account_debit_id.
+            This is the same account used in _get_advance_gl_balance(),
+            so it is guaranteed to be consistent.
         """
         result = super().action_payslip_done()
 
@@ -169,16 +174,23 @@ class HrPayslip(models.Model):
             if not payslip.move_id or not partner:
                 continue
 
-            lines_without_partner = payslip.move_id.line_ids.filtered(
-                lambda l: not l.partner_id
-            )
-            if not lines_without_partner:
+            sar_rule = self._get_sar_rule(payslip.employee_id)
+            if not sar_rule or not sar_rule.account_debit_id:
                 continue
 
-            # Reset to draft, write partner, re-post.
-            # This is the standard Odoo pattern for editing a posted move.
+            # Find the SAR line — the line posted on the advance account.
+            # We match by account_id only, not by debit/credit direction,
+            # because the community module may post it on either side
+            # depending on the sign of the SAR amount.
+            sar_move_lines = payslip.move_id.line_ids.filtered(
+                lambda l: l.account_id == sar_rule.account_debit_id
+            )
+            if not sar_move_lines:
+                continue
+
+            # Reset to draft, stamp partner on SAR lines only, re-post.
             payslip.move_id.button_draft()
-            lines_without_partner.write({'partner_id': partner.id})
+            sar_move_lines.write({'partner_id': partner.id})
             payslip.move_id.action_post()
 
         return result
