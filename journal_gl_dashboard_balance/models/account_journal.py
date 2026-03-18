@@ -6,17 +6,19 @@ from odoo import models, fields, api
 class AccountJournal(models.Model):
     _inherit = "account.journal"
 
+    # ✅ Fix currency issue
     company_currency_id = fields.Many2one(
         "res.currency",
         related="company_id.currency_id",
         readonly=True
     )
 
+    # ✅ GL Balance (correct & dashboard-matching)
     gl_balance = fields.Monetary(
         string="GL Balance",
         currency_field="company_currency_id",
         compute="_compute_gl_balance",
-        help="Current balance of the journal default account"
+        help="Current balance of the journal default account (matches dashboard)"
     )
 
     def action_open_gl_account(self):
@@ -29,12 +31,10 @@ class AccountJournal(models.Model):
             "view_mode": "tree,form",
             "domain": [
                 ("account_id", "=", self.default_account_id.id),
-                ("parent_state", "=", "posted"),
                 ("company_id", "=", self.company_id.id),
+                ("move_id.state", "=", "posted"),
             ],
-            "context": {
-                "create": False
-            },
+            "context": {"create": False},
         }
 
     @api.depends("default_account_id")
@@ -44,17 +44,20 @@ class AccountJournal(models.Model):
         balances = {}
 
         if journals:
-
             account_ids = journals.mapped("default_account_id").ids
             company_ids = journals.mapped("company_id").ids
 
             query = """
-                SELECT account_id, company_id, SUM(debit - credit) AS balance
-                FROM account_move_line
-                WHERE account_id IN %s
-                AND company_id IN %s
-                AND parent_state = 'posted'
-                GROUP BY account_id, company_id
+                SELECT 
+                    aml.account_id,
+                    aml.company_id,
+                    SUM(aml.debit - aml.credit) AS balance
+                FROM account_move_line aml
+                JOIN account_move am ON aml.move_id = am.id
+                WHERE aml.account_id IN %s
+                  AND aml.company_id IN %s
+                  AND am.state = 'posted'
+                GROUP BY aml.account_id, aml.company_id
             """
 
             self.env.cr.execute(query, (tuple(account_ids), tuple(company_ids)))
