@@ -13,7 +13,7 @@
                            name="action_open_journal_items"
                            style="font-size:16px; font-weight:bold;"
                            t-att-title="'Payments: %s\nMisc: %s' % (record.payments_total, record.misc_total)">
-                            GL Balance <field name="balance" widget="monetary"/>
+                            💰 <field name="balance" widget="monetary"/>
                         </a>
                     </div>
                 </xpath>
