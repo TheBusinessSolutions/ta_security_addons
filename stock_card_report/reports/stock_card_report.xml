@@ -1,153 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <template id="stock_card_report.internal_layout">
+    <!-- Internal Layout for PDF -->
+    <template id="internal_layout">
         <div class="article">
-            <link
-                href="/stock_card_report/static/src/css/report.css"
-                rel="stylesheet"
-            />
-            <t t-out="0" />
+            <link href="/stock_card_report/static/src/css/report.css" rel="stylesheet"/>
+            <t t-out="0"/>
         </div>
         <div class="footer">
             <div class="row">
                 <div class="col-6 custom_footer">
-                    <span
-                        t-out="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"
-                    />
+                    <span t-out="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d')"/>
                 </div>
                 <div class="col-6 text-right custom_footer">
-                    <span class="page" />/<span class="topage" />
+                    <span class="page"/> / <span class="topage"/>
                 </div>
             </div>
         </div>
     </template>
 
+    <!-- Report Buttons -->
     <template id="report_buttons">
-        <div class="button_row">
-            <button class="o_stock_card_reports_print btn btn-sm oe_button"><span
-                    class="fa fa-print"
-                />Print</button>
-            <button class="o_stock_card_reports_export btn btn-sm oe_button"><span
-                    class="fa fa-download"
-                />Export</button>
+        <div class="button_row mb-2">
+            <button class="o_stock_card_reports_print btn btn-sm btn-secondary">
+                <i class="fa fa-print"/> Print
+            </button>
+            <button class="o_stock_card_reports_export btn btn-sm btn-secondary">
+                <i class="fa fa-download"/> Export
+            </button>
         </div>
     </template>
 
+    <!-- HTML Report Template -->
     <template id="report_stock_card_report_html">
         <div class="o_stock_card_reports_page">
-            <t t-call="stock_card_report.report_buttons" />
-            <t t-call="stock_card_report.report_stock_card_report_base" />
+            <t t-call="stock_card_report.report_buttons"/>
+            <t t-call="stock_card_report.report_stock_card_report_base"/>
         </div>
     </template>
 
-    <template id="stock_card_report.report_stock_card_report_pdf">
+    <!-- PDF Report Template -->
+    <template id="report_stock_card_report_pdf">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="stock_card_report.internal_layout">
-                    <t t-call="stock_card_report.report_stock_card_report_base" />
+                    <t t-call="stock_card_report.report_stock_card_report_base"/>
                 </t>
             </t>
         </t>
     </template>
 
-    <template id="stock_card_report.report_stock_card_report_base">
+    <!-- Base Report Template -->
+    <template id="report_stock_card_report_base">
         <t t-foreach="o.product_ids" t-as="product">
             <div class="page">
                 <div class="row">
-                    <t t-set="title">Stock Card - <t t-out="product.name" /></t>
-                    <h4 class="mt0" t-out="title" style="text-align: center;" />
+                    <t t-set="title">Stock Card - <t t-out="product.name"/></t>
+                    <h4 class="mt0 text-center" t-out="title"/>
                 </div>
-                <!-- Display filters -->
-                <t t-call="stock_card_report.report_stock_card_report_filters" />
-                <!-- Display stock card table -->
-                <div class="act_as_table data_table mt4" style="width: 100%;">
-                    <!-- Display header line-->
-                    <t t-call="stock_card_report.report_stock_card_lines_header" />
-                    <!-- Display initial lines -->
-                    <t
-                        t-set="initial"
-                        t-value="o._get_initial(o.results.filtered(lambda l: l.product_id == product and l.is_initial))"
-                    />
+                
+                <!-- Filters -->
+                <t t-call="stock_card_report.report_stock_card_report_filters"/>
+                
+                <!-- Table -->
+                <div class="act_as_table data_table mt-2" style="width: 100%;">
+                    <!-- Header with NEW columns -->
+                    <t t-call="stock_card_report.report_stock_card_lines_header"/>
+                    
+                    <!-- Initial Balance -->
+                    <t t-set="initial" t-value="o._get_initial(o.results.filtered(lambda l: l.product_id == product and l.is_initial))"/>
                     <div class="act_as_row lines">
-                        <div class="act_as_cell" />
-                        <div class="act_as_cell">
-                            Initial
-                        </div>
-                        <div class="act_as_cell" />
-                        <div class="act_as_cell" />
+                        <div class="act_as_cell"/>
+                        <div class="act_as_cell"/>
+                        <div class="act_as_cell"/>
+                        <div class="act_as_cell"/>
+                        <div class="act_as_cell"/>
+                        <div class="act_as_cell"/>
+                        <div class="act_as_cell"/>
+                        <div class="act_as_cell"/>
+                        <div class="act_as_cell"/>
                         <div class="act_as_cell right">
-                            <t t-out="'{0:,.3f}'.format(initial)" />
+                            <strong><t t-out="'{0:,.3f}'.format(initial)"/></strong>
                         </div>
                     </div>
-                    <!-- Display each lines -->
-                    <t t-set="product_balance" t-value="initial" />
-                    <t
-                        t-foreach="o.results.filtered(lambda l: l.product_id == product and not l.is_initial)"
-                        t-as="product_line"
-                    >
-                        <t
-                            t-set="product_balance"
-                            t-value="product_balance + product_line.product_in - product_line.product_out"
-                        />
-                        <t t-call="stock_card_report.report_stock_card_lines" />
+                    
+                    <!-- Transaction Lines -->
+                    <t t-set="product_balance" t-value="initial"/>
+                    <t t-foreach="o.results.filtered(lambda l: l.product_id == product and not l.is_initial)" t-as="product_line">
+                        <t t-set="product_balance" t-value="product_balance + product_line.product_in - product_line.product_out"/>
+                        <t t-call="stock_card_report.report_stock_card_lines"/>
                     </t>
                 </div>
-                <p style="page-break-before:always;" />
+                <p style="page-break-before:always;"/>
             </div>
         </t>
     </template>
 
-    <template id="stock_card_report.report_stock_card_report_filters">
-        <div class="act_as_table data_table" style="width: 100%;">
-            <div class="act_as_row labels">
-                <div class="act_as_cell">Date From</div>
-                <div class="act_as_cell">Date To</div>
-                <div class="act_as_cell">Location</div>
+    <!-- Filters Template - Shows "All Locations" when empty -->
+    <template id="report_stock_card_report_filters">
+        <div class="act_as_table data_table mb-2" style="width: 100%;">
+            <div class="act_as_row labels bg-200">
+                <div class="act_as_cell"><strong>Date From</strong></div>
+                <div class="act_as_cell"><strong>Date To</strong></div>
+                <div class="act_as_cell"><strong>Location</strong></div>
             </div>
             <div class="act_as_row">
+                <div class="act_as_cell"><span t-field="o.date_from"/></div>
+                <div class="act_as_cell"><span t-field="o.date_to"/></div>
                 <div class="act_as_cell">
-                    <span t-field="o.date_from" />
-                </div>
-                <div class="act_as_cell">
-                    <span t-field="o.date_to" />
-                </div>
-                <div class="act_as_cell">
-                    <span t-field="o.location_id" />
+                    <span t-field="o.location_id" t-if="o.location_id"/>
+                    <span t-if="not o.location_id">All Locations</span>
                 </div>
             </div>
         </div>
     </template>
 
-    <template id="stock_card_report.report_stock_card_lines_header">
+    <!-- Header Template - NEW COLUMNS ADDED -->
+    <template id="report_stock_card_lines_header">
         <div class="act_as_thead">
-            <div class="act_as_row labels">
-                <div class="act_as_cell">Date</div>
-                <div class="act_as_cell">Reference</div>
-                <div class="act_as_cell">In</div>
-                <div class="act_as_cell">Out</div>
-                <div class="act_as_cell">Balance</div>
+            <div class="act_as_row labels bg-100">
+                <div class="act_as_cell"><strong>Date</strong></div>
+                <div class="act_as_cell"><strong>Document #</strong></div>
+                <div class="act_as_cell"><strong>From</strong></div>
+                <div class="act_as_cell"><strong>To</strong></div>
+                <div class="act_as_cell"><strong>Source Doc</strong></div>
+                <div class="act_as_cell"><strong>Description</strong></div>
+                <div class="act_as_cell"><strong>Partner</strong></div>
+                <div class="act_as_cell"><strong>In</strong></div>
+                <div class="act_as_cell"><strong>Out</strong></div>
+                <div class="act_as_cell"><strong>Balance</strong></div>
             </div>
         </div>
     </template>
 
-    <template id="stock_card_report.report_stock_card_lines">
+    <!-- Line Template - NEW COLUMNS WITH PROPER VALUES -->
+    <template id="report_stock_card_lines">
         <div class="act_as_row lines">
+            <!-- Date -->
             <div class="act_as_cell left">
-                <t t-out="product_line.date.strftime('%Y-%m-%d')" />
+                <t t-out="product_line.date.strftime('%Y-%m-%d') if product_line.date else ''"/>
             </div>
+            <!-- Document # - FIXED: Use picking name, not transient ID -->
             <div class="act_as_cell left">
-                <t t-out="product_line.display_name" />
+                <t t-out="product_line.picking_id.name if product_line.picking_id else (product_line.reference or '')"/>
             </div>
-            <div class="act_as_cell right">
-                <t t-out="'{0:,.3f}'.format(product_line.product_in)" />
+            <!-- From Location - NEW -->
+            <div class="act_as_cell left">
+                <t t-out="product_line.location_from or (product_line.location_id.display_name if product_line.location_id else '')"/>
             </div>
-            <div class="act_as_cell right">
-                <t t-out="'{0:,.3f}'.format(product_line.product_out)" />
+            <!-- To Location - NEW -->
+            <div class="act_as_cell left">
+                <t t-out="product_line.location_to or (product_line.location_dest_id.display_name if product_line.location_dest_id else '')"/>
             </div>
+            <!-- Source Document - NEW (SO/PO number) -->
+            <div class="act_as_cell left">
+                <t t-out="product_line.source_document or ''"/>
+            </div>
+            <!-- Description -->
+            <div class="act_as_cell left">
+                <t t-out="product_line.description or ''"/>
+            </div>
+            <!-- Partner -->
+            <div class="act_as_cell left">
+                <t t-out="product_line.partner_id.name if product_line.partner_id else ''"/>
+            </div>
+            <!-- Qty In -->
             <div class="act_as_cell right">
-                <t t-out="'{0:,.3f}'.format(product_balance)" />
+                <t t-out="'{0:,.3f}'.format(product_line.product_in)"/>
+            </div>
+            <!-- Qty Out -->
+            <div class="act_as_cell right">
+                <t t-out="'{0:,.3f}'.format(product_line.product_out)"/>
+            </div>
+            <!-- Balance -->
+            <div class="act_as_cell right">
+                <t t-out="'{0:,.3f}'.format(product_balance)"/>
             </div>
         </div>
-   </template>
-
+    </template>
 </odoo>

@@ -1,0 +1,282 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* stock_card_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 16.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Generator: Poedit 3.9\n"
+
+#. module: stock_card_report
+#: model:ir.actions.report,print_report_name:stock_card_report.action_stock_card_report_pdf
+msgid "'Stock Card Report - [%s]' % (object.location_id.complete_name)"
+msgstr "'تقرير كارته صنف المخزون - [%s]' % (object.location_id.complete_name)"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.report_buttons
+msgid "<span class=\"fa fa-download\"/>Export"
+msgstr "<span class=\"fa fa-download\"/>تصدير"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.report_buttons
+msgid "<span class=\"fa fa-print\"/>Print"
+msgstr "<span class=\"fa fa-print\"/>طباعة"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.internal_layout
+msgid "<span class=\"page\"/>/<span class=\"topage\"/>"
+msgstr "<span class=\"page\"/>/<span class=\"topage\"/>"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.report_stock_card_lines_header
+msgid "Balance"
+msgstr "الرصيد"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.stock_card_report_wizard_form
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_report_stock_card_report__create_uid
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_report_wizard__create_uid
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__create_uid
+msgid "Created by"
+msgstr "أنشئ بواسطة"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_report_stock_card_report__create_date
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_report_wizard__create_date
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__create_date
+msgid "Created on"
+msgstr "أنشئ في"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__date
+#: model_terms:ir.ui.view,arch_db:stock_card_report.report_stock_card_lines_header
+msgid "Date"
+msgstr "التاريخ"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_report_stock_card_report__date_from
+#: model_terms:ir.ui.view,arch_db:stock_card_report.report_stock_card_report_filters
+msgid "Date From"
+msgstr "من تاريخ"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_report_stock_card_report__date_to
+#: model_terms:ir.ui.view,arch_db:stock_card_report.report_stock_card_report_filters
+msgid "Date To"
+msgstr "إلى تاريخ"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_report_stock_card_report__display_name
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_report_wizard__display_name
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__display_name
+msgid "Display Name"
+msgstr "اسم التقرير"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_report_wizard__date_to
+msgid "End Date"
+msgstr "تاريخ الانتهاء"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.stock_card_report_wizard_form
+msgid "Export PDF"
+msgstr "تصدير PDF"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.stock_card_report_wizard_form
+msgid "Export XLSX"
+msgstr "تصدير أكسل"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_report_stock_card_report__id
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_report_wizard__id
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__id
+msgid "ID"
+msgstr "المعرف"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.report_stock_card_lines_header
+msgid "In"
+msgstr "وارد"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.report_stock_card_report_base
+msgid "Initial"
+msgstr "الرصيد الافتتاحي"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__is_initial
+msgid "Is Initial"
+msgstr "هل هو رصيد افتتاحي"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_report_stock_card_report____last_update
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_report_wizard____last_update
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view____last_update
+msgid "Last Modified on"
+msgstr "آخر تعديل في"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_report_stock_card_report__write_uid
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_report_wizard__write_uid
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__write_uid
+msgid "Last Updated by"
+msgstr "آخر تحديث بواسطة"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_report_stock_card_report__write_date
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_report_wizard__write_date
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__write_date
+msgid "Last Updated on"
+msgstr "آخر تحديث في"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_report_stock_card_report__location_id
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_report_wizard__location_id
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__location_id
+#: model_terms:ir.ui.view,arch_db:stock_card_report.report_stock_card_report_filters
+msgid "Location"
+msgstr "الموقع"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__location_dest_id
+msgid "Location Dest"
+msgstr "موقع الوجهة"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.report_stock_card_lines_header
+msgid "Out"
+msgstr "صادر"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_report_wizard__date_range_id
+msgid "Period"
+msgstr "الفترة"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__picking_id
+msgid "Picking"
+msgstr "عملية التسليم"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_report_stock_card_report__product_ids
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__product_id
+msgid "Product"
+msgstr "المنتج"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__product_in
+msgid "Product In"
+msgstr "اضافه المنتج"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__product_out
+msgid "Product Out"
+msgstr "صرف المنتج"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__product_qty
+msgid "Product Qty"
+msgstr "كمية المنتج"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__product_uom
+msgid "Product Uom"
+msgstr "وحدة قياس المنتج"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__product_uom_qty
+msgid "Product Uom Qty"
+msgstr "كمية"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_report_wizard__product_ids
+msgid "Products"
+msgstr "المنتجات"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_view__reference
+#: model_terms:ir.ui.view,arch_db:stock_card_report.report_stock_card_lines_header
+msgid "Reference"
+msgstr "المرجع"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_report_stock_card_report__results
+msgid "Results"
+msgstr "النتائج"
+
+#. module: stock_card_report
+#: model:ir.model.fields,field_description:stock_card_report.field_stock_card_report_wizard__date_from
+msgid "Start Date"
+msgstr "تاريخ البدء"
+
+#. module: stock_card_report
+#: model:ir.actions.act_window,name:stock_card_report.stock_card_report_action
+#: model:ir.ui.menu,name:stock_card_report.stock_card_report_menu
+msgid "Stock Card"
+msgstr "كارتة صنف"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.report_stock_card_report_base
+msgid "Stock Card -"
+msgstr "كارته حركة صنف  -"
+
+#. module: stock_card_report
+#: model:ir.actions.report,name:stock_card_report.action_stock_card_report_pdf
+msgid "Stock Card PDF"
+msgstr "كارتة صنف PDF"
+
+#. module: stock_card_report
+#: model:ir.actions.client,name:stock_card_report.action_report_stock_card_report_html
+#: model:ir.model,name:stock_card_report.model_report_stock_card_report
+msgid "Stock Card Report"
+msgstr "تقرير كارته حركة صنف "
+
+#. module: stock_card_report
+#: model:ir.model,name:stock_card_report.model_stock_card_report_wizard
+msgid "Stock Card Report Wizard"
+msgstr "معالج تقرير كارتة صنف"
+
+#. module: stock_card_report
+#: model:ir.model,name:stock_card_report.model_report_stock_card_report_report_stock_card_report_xlsx
+msgid "Stock Card Report XLSX"
+msgstr "تقرير كارتة صنف XLSX"
+
+#. module: stock_card_report
+#: model:ir.model,name:stock_card_report.model_stock_card_view
+msgid "Stock Card View"
+msgstr "عرض كارتة صنف"
+
+#. module: stock_card_report
+#: model:ir.actions.report,name:stock_card_report.action_stock_card_report_xlsx
+msgid "Stock Card XLSX"
+msgstr "كارتة صنف XLSX"
+
+#. module: stock_card_report
+#: model:ir.model.fields,help:stock_card_report.field_report_stock_card_report__results
+msgid "Use compute fields, so there is nothing store in database"
+msgstr "استخدام الحقول المحسوبة، لذلك لا يتم تخزين أي شيء في قاعدة البيانات"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.stock_card_report_wizard_form
+msgid "View"
+msgstr "عرض"
+
+#. module: stock_card_report
+#: model_terms:ir.ui.view,arch_db:stock_card_report.stock_card_report_wizard_form
+msgid "or"
+msgstr "أو"

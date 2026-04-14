@@ -4,7 +4,7 @@
 {
     "name": "Stock Card Report",
     "summary": "Add stock card report on Inventory Reporting.",
-    "version": "16.0.1.0.2",
+    "version": "17.0.1.0.2",
     "category": "Warehouse",
     "website": "https://github.com/OCA/stock-logistics-reporting",
     "author": "Ecosoft, Odoo Community Association (OCA)",
@@ -20,7 +20,7 @@
     "assets": {
         "web.assets_backend": [
             "stock_card_report/static/src/css/**/*",
-            "stock_card_report/static/src/js/**/*",
+            "stock_card_report/static/src/js/stock_card_report_backend.esm.js",
         ]
     },
     "installable": True,
