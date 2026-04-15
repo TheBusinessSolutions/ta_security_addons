@@ -7,7 +7,6 @@ from odoo.addons.report_xlsx_helper.report.report_xlsx_format import (
     XLS_HEADERS,
 )
 
-# FIXED: Proper logger initialization
 _logger = logging.getLogger(__name__)
 
 
@@ -53,7 +52,7 @@ class ReportStockCardReportXlsx(models.AbstractModel):
         initial_template = {
             "1_ref": {
                 "data": {"value": "Initial", "format": FORMATS["format_tcell_center"]},
-                "colspan": 9,
+                "colspan": 5,
             },
             "2_balance": {
                 "data": {
@@ -62,7 +61,7 @@ class ReportStockCardReportXlsx(models.AbstractModel):
                 }
             },
         }
-        # FIXED: Added new columns for From/To Location, Source Document, etc.
+        # Added lot_names column
         stock_card_template = {
             "1_date": {
                 "header": {"value": "Date"},
@@ -70,7 +69,7 @@ class ReportStockCardReportXlsx(models.AbstractModel):
                     "value": self._render("date"),
                     "format": FORMATS["format_tcell_date_left"],
                 },
-                "width": 15,
+                "width": 18,
             },
             "2_reference": {
                 "header": {"value": "Document #"},
@@ -78,7 +77,7 @@ class ReportStockCardReportXlsx(models.AbstractModel):
                     "value": self._render("reference"),
                     "format": FORMATS["format_tcell_left"],
                 },
-                "width": 18,
+                "width": 20,
             },
             "3_location_from": {
                 "header": {"value": "From"},
@@ -96,15 +95,23 @@ class ReportStockCardReportXlsx(models.AbstractModel):
                 },
                 "width": 20,
             },
-            "5_source_doc": {
+            "5_lot_names": {
+                "header": {"value": "Lot/Serial"},
+                "data": {
+                    "value": self._render("lot_names"),
+                    "format": FORMATS["format_tcell_left"],
+                },
+                "width": 22,
+            },
+            "6_source_doc": {
                 "header": {"value": "Source Doc"},
                 "data": {
                     "value": self._render("source_document"),
                     "format": FORMATS["format_tcell_left"],
                 },
-                "width": 15,
+                "width": 18,
             },
-            "6_description": {
+            "7_description": {
                 "header": {"value": "Description"},
                 "data": {
                     "value": self._render("description"),
@@ -112,7 +119,7 @@ class ReportStockCardReportXlsx(models.AbstractModel):
                 },
                 "width": 25,
             },
-            "7_partner": {
+            "8_partner": {
                 "header": {"value": "Partner"},
                 "data": {
                     "value": self._render("partner"),
@@ -120,20 +127,20 @@ class ReportStockCardReportXlsx(models.AbstractModel):
                 },
                 "width": 20,
             },
-            "8_input": {
+            "9_input": {
                 "header": {"value": "In"},
                 "data": {"value": self._render("input")},
-                "width": 10,
+                "width": 12,
             },
-            "9_output": {
+            "10_output": {
                 "header": {"value": "Out"},
                 "data": {"value": self._render("output")},
-                "width": 10,
+                "width": 12,
             },
-            "10_balance": {
+            "11_balance": {
                 "header": {"value": "Balance"},
                 "data": {"value": self._render("balance")},
-                "width": 12,
+                "width": 14,
             },
         }
 
@@ -200,8 +207,9 @@ class ReportStockCardReportXlsx(models.AbstractModel):
         )
         for line in product_lines:
             balance += line.product_in - line.product_out
-            # FIXED: Proper document reference
             reference = line.picking_id.name if line.picking_id else (line.reference or "")
+            # Handle lot_names: show "-" if empty (no tracking)
+            lot_display = line.lot_names if line.lot_names else "-"
             row_pos = self._write_line(
                 ws, row_pos, ws_params, col_specs_section="data",
                 render_space={
@@ -209,6 +217,7 @@ class ReportStockCardReportXlsx(models.AbstractModel):
                     "reference": reference,
                     "location_from": line.location_from or (line.location_id.display_name if line.location_id else ""),
                     "location_to": line.location_to or (line.location_dest_id.display_name if line.location_dest_id else ""),
+                    "lot_names": lot_display,
                     "source_document": line.source_document or "",
                     "description": line.description or "",
                     "partner": line.partner_id.name if line.partner_id else "",
