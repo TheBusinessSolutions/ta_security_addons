@@ -1,0 +1,193 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* inventory_advanced_reports
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-05 16:51+0000\n"
+"PO-Revision-Date: 2026-04-05 18:56+0200\n"
+"Last-Translator: \n"
+"Language-Team: Arabic\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"X-Generator: Poedit 3.9\n"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_movement
+msgid ""
+"<br/>\n"
+"                            <strong>\n"
+"                                Date to:\n"
+"                            </strong>"
+msgstr ""
+"<br/>\n"
+"                            <strong>\n"
+"                                التاريخ إلى:\n"
+"                            </strong>"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_fsn
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_fsn_xyz
+msgid ""
+"<br/>\n"
+"                            <strong>\n"
+"                                End Date:\n"
+"                            </strong>"
+msgstr ""
+"<br/>\n"
+"                            <strong>\n"
+"                                تاريخ الانتهاء:\n"
+"                            </strong>"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_out_of_stock
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_over_stock
+msgid ""
+"<strong>\n"
+"                                Sales History from:\n"
+"                            </strong>"
+msgstr ""
+"<strong>\n"
+"                                سجل المبيعات من:\n"
+"                            </strong>"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_movement
+msgid "ADJUSTMENT IN"
+msgstr "تسوية واردة"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_movement
+msgid "ADJUSTMENT OUT"
+msgstr "تسوية صادرة"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_fsn
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_fsn_xyz
+msgid "AVERAGE STOCK"
+msgstr "متوسط المخزون"
+
+#. module: inventory_advanced_reports
+#: model:ir.model.fields,field_description:inventory_advanced_reports.field_inventory_aging_data_report__data_id
+msgid "Aging Data"
+msgstr "بيانات أعمار المخزون"
+
+#. module: inventory_advanced_reports
+#: model:ir.model,name:inventory_advanced_reports.model_report_inventory_advanced_reports_report_inventory_aging
+msgid "Aging Report"
+msgstr "تقرير أعمار المخزون"
+
+#. module: inventory_advanced_reports
+#: model:ir.model.fields.selection,name:inventory_advanced_reports.selection__inventory_fsn_report__fsn__all
+msgid "All"
+msgstr "الكل"
+
+#. module: inventory_advanced_reports
+#: model:ir.model.fields,help:inventory_advanced_reports.field_inventory_out_of_stock_data_report__ads
+msgid "Average Daily Sales"
+msgstr "متوسط المبيعات اليومية"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_aging
+msgid "CATEGORY"
+msgstr "الفئة"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_movement
+msgid "CLOSING STOCK"
+msgstr "مخزون الإغلاق"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_out_of_stock
+msgid "COST PRICE"
+msgstr "سعر التكلفة"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_over_stock
+msgid "COVERAGE DAYS"
+msgstr "أيام التغطية"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_aging
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_xyz
+msgid "CURRENT STOCK"
+msgstr "المخزون الحالي"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.inventory_aging_report_view_form
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. module: inventory_advanced_reports
+#: model:ir.model.fields,field_description:inventory_advanced_reports.field_inventory_aging_data_report__category_id
+msgid "Category"
+msgstr "الفئة"
+
+#. module: inventory_advanced_reports
+#: model:ir.model.fields,field_description:inventory_advanced_reports.field_inventory_aging_data_report__company_id
+msgid "Company"
+msgstr "الشركة"
+
+#. module: inventory_advanced_reports
+#: model:ir.model.fields,field_description:inventory_advanced_reports.field_inventory_aging_data_report__create_date
+msgid "Created on"
+msgstr "أنشئ في"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.inventory_fsn_report_view_form
+msgid "Date Range"
+msgstr "نطاق التاريخ"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.inventory_age_breakdown_report_view_form
+msgid "EXCEL"
+msgstr "إكسل"
+
+#. module: inventory_advanced_reports
+#: model:ir.model.fields,field_description:inventory_advanced_reports.field_inventory_fsn_report__end_date
+msgid "End Date"
+msgstr "تاريخ الانتهاء"
+
+#. module: inventory_advanced_reports
+#: model:ir.model.fields,field_description:inventory_advanced_reports.field_inventory_fsn_data_report__fsn_classification
+msgid "FSN Classification"
+msgstr "تصنيف FSN (سريع، بطيء، غير متحرك)"
+
+#. module: inventory_advanced_reports
+#: model:ir.model.fields.selection,name:inventory_advanced_reports.selection__inventory_fsn_report__fsn__fast_moving
+msgid "Fast Moving"
+msgstr "سريع الحركة"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.inventory_fsn_report_view_form
+msgid "Filters"
+msgstr "الفلاتر"
+
+#. module: inventory_advanced_reports
+#: model:ir.model.fields,field_description:inventory_advanced_reports.field_inventory_out_of_stock_data_report__virtual_stock
+msgid "Forecasted QTY"
+msgstr "الكمية المتوقعة"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_movement
+msgid "INTERNAL IN"
+msgstr "تحويل داخلي وارد"
+
+#. module: inventory_advanced_reports
+#: model_terms:ir.ui.view,arch_db:inventory_advanced_reports.report_inventory_movement
+msgid "INTERNAL OUT"
+msgstr "تحويل داخلي صادر"
+
+#. module: inventory_advanced_reports
+#: model:ir.actions.act_window,name:inventory_advanced_reports.inventory_aging_report_action
+msgid "Inventory Aging Report"
+msgstr "تقرير أعمار المخزون"
+
+#. module: inventory_advanced_reports
+#: model:ir.model,name:inventory_advanced_reports.model_inventory_fsn_data_report
+msgid "Inventory FSN Data Report"
+msgstr "تقرير بيانات FSN للمخزون"
